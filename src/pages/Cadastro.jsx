@@ -48,7 +48,7 @@ function Cadastro() {
       <form className="form-stack two-columns" onSubmit={handleSubmit}>
         <label>
           Nome
-          <input value={dados.nome} onChange={(e) => update('nome', e.target.value)} placeholder="Ana Ingridy" />
+          <input value={dados.nome} onChange={(e) => update('nome', e.target.value)} placeholder="Seu nome" />
         </label>
         <label>
           E-mail

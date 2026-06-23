@@ -42,7 +42,7 @@ function Explorar() {
         <div>
           <p className="eyebrow">Descubra</p>
           <h1>Explorar anúncios</h1>
-          <p style={{ fontSize: "0.875rem", color: "#6b7280" }}>
+          <p style={{ fontSize: "0.875rem", color: "var(--muted)" }}>
             {loading
               ? "Carregando anúncios..."
               : `${total} anúncio${total === 1 ? "" : "s"} encontrado${total === 1 ? "" : "s"}.`}
@@ -74,7 +74,7 @@ function Explorar() {
 
         <div>
           {loading ? (
-            <div className="card card-body" style={{ textAlign: "center", fontSize: "0.875rem", color: "#9ca3af" }}>
+            <div className="card card-body" style={{ textAlign: "center", fontSize: "0.875rem", color: "var(--muted)" }}>
               Carregando...
             </div>
           ) : resultado.length > 0 ? (

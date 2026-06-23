@@ -14,7 +14,7 @@ const Garagem = () => {
 
   return (
     <div style={{ padding: '2rem' }}>
-      <h1 style={{ color: '#16382c', marginBottom: '2rem', textAlign: 'center', fontWeight: '800' }}>Minha Garagem Virtual</h1>
+      <h1 style={{ color: 'var(--brand-dark)', marginBottom: '2rem', textAlign: 'center', fontWeight: '800' }}>Minha Garagem Virtual</h1>
 
       <div style={{ display: 'flex', gap: '1.5rem', flexWrap: 'wrap', justifyContent: 'center' }}>
         
@@ -56,9 +56,9 @@ const Garagem = () => {
           <h2 style={tituloListaStyle}>Trocado/Vendido</h2>
           {garagem.concluido.length === 0 ? <p style={textoVazioStyle}>Histórico vazio.</p> : (
             garagem.concluido.map(item => (
-              <div key={item.id} style={{ ...cardStyle, opacity: 0.7, border: 'none', backgroundColor: '#d9ded8' }}>
+              <div key={item.id} style={{ ...cardStyle, opacity: 0.7, border: 'none', backgroundColor: 'var(--surface-soft)' }}>
                 <p style={itemTituloStyle}>{item.titulo}</p>
-                <span style={{ fontSize: '0.85rem', color: '#16382c', fontWeight: '700' }}>Negociação Concluída</span>
+                <span style={{ fontSize: '0.85rem', color: 'var(--brand-dark)', fontWeight: '700' }}>Negociação Concluída</span>
               </div>
             ))
           )}
@@ -73,42 +73,42 @@ const Garagem = () => {
 const colunaStyle = {
   flex: '1',
   minWidth: '280px',
-  backgroundColor: '#ffffff',
+  backgroundColor: 'var(--surface)',
   padding: '1.5rem',
   borderRadius: '0.5rem',
-  border: '1px solid #d9ded8',
+  border: '1px solid var(--border)',
 };
 
 const tituloListaStyle = {
   fontSize: '1.25rem',
-  color: '#16382c',
-  borderBottom: '2px solid #176b4d',
+  color: 'var(--brand-dark)',
+  borderBottom: '2px solid var(--brand)',
   paddingBottom: '0.5rem',
   marginBottom: '1.5rem',
   fontWeight: '800'
 };
 
 const textoVazioStyle = {
-  color: '#1f2933',
+  color: 'var(--text)',
   opacity: 0.7
 };
 
 const cardStyle = {
-  border: '1px solid #d9ded8',
+  border: '1px solid var(--border)',
   padding: '1rem',
   borderRadius: '0.5rem',
   marginBottom: '1rem',
-  backgroundColor: '#f7f7f2'
+  backgroundColor: 'var(--surface-soft)'
 };
 
 const itemTituloStyle = {
-  color: '#1f2933',
+  color: 'var(--text)',
   fontWeight: '700',
   margin: '0 0 0.5rem 0'
 };
 
 const btnVerde = {
-  backgroundColor: '#176b4d',
+  backgroundColor: 'var(--brand)',
   color: '#ffffff',
   border: 'none',
   padding: '0.75rem 1rem',
@@ -120,8 +120,8 @@ const btnVerde = {
 };
 
 const btnCinza = {
-  backgroundColor: '#d9ded8',
-  color: '#1f2933',
+  backgroundColor: 'var(--surface-soft)',
+  color: 'var(--text)',
   border: 'none',
   padding: '0.75rem 1rem',
   borderRadius: '0.5rem',

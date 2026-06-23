@@ -5,6 +5,8 @@ export const ROUTES = Object.freeze({
   cadastro: "/cadastro",
   perfil: "/perfil",
   garagem: "/garagem",
+  negociacoes: "/negociacoes",
+  negociacaoDetalhe: "/negociacoes/:id",
   criarAnuncio: "/anuncios/novo",
   novoAnuncio: "/anuncios/novo",
   anuncioDetalhe: "/anuncios/:id",
@@ -18,4 +20,8 @@ export function anuncioPath(id) {
 
 export function editarAnuncioPath(id) {
   return `/anuncios/${id}/editar`;
+}
+
+export function negociacaoPath(id) {
+  return `/negociacoes/${id}`;
 }

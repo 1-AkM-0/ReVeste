@@ -14,6 +14,7 @@ function Navbar() {
     { to: ROUTES.home, label: 'Inicio' },
     { to: ROUTES.explorar, label: 'Explorar' },
     ...(usuario ? [{ to: ROUTES.garagem, label: 'Garagem' }] : []),
+    ...(usuario ? [{ to: ROUTES.negociacoes, label: 'Negociações' }] : []),
     { to: usuario ? ROUTES.perfil : ROUTES.login, label: usuario ? 'Perfil' : 'Login' },
   ];
 

@@ -66,6 +66,24 @@ export function NegociacaoProvider({children}){
     )
   }
 
+  const encerrar = (id) => {
+    const proposta = propostas.find(p => String(p.id) === String(id))
+
+    if (!proposta) {
+      return
+    }
+
+    atualizarProposta(
+      id, {
+        status: 'encerrada'
+      }
+    )
+
+    setPropostas(
+      buscarPropostas()
+    )
+  }
+
   return(
 
     <NegociacaoContext.Provider
@@ -74,7 +92,8 @@ export function NegociacaoProvider({children}){
           propostas,
           criar,
           aceitar,
-          recusar
+          recusar,
+          encerrar
         }
       }
     >

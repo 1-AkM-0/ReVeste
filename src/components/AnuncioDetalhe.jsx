@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { CATEGORIAS, formatPreco, formatData } from "../utils/anuncios";
 
-export default function AnuncioDetalhe({ anuncio, isOwner, onEditar, onExcluir }) {
+export default function AnuncioDetalhe({ anuncio, isOwner, onEditar, onExcluir, onNegociar }) {
   const [fotoAtiva, setFotoAtiva] = useState(0);
 
   const cat    = CATEGORIAS[anuncio.categoria];
@@ -126,7 +126,17 @@ export default function AnuncioDetalhe({ anuncio, isOwner, onEditar, onExcluir }
             Entrar em contato
           </a>
 
-          <p className="contato-hint">Você será redirecionado ao WhatsApp</p>
+          {!isOwner && (
+            <button
+              type="button"
+              onClick={onNegociar}
+              className="btn btn-primary"
+            >
+              Negociar pelo ReVeste
+            </button>
+          )}
+
+          <p className="contato-hint">Use o WhatsApp ou negocie pelo chat interno do ReVeste</p>
         </div>
       </div>
     </div>

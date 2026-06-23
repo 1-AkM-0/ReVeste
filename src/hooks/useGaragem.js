@@ -1,5 +1,12 @@
 import { useState, useEffect } from 'react';
-import { atualizarStatusAnuncio } from '../utils/anuncios';
+import {
+  buscarGaragem,
+  estadoGaragemInicial,
+  itemGaragemFromAnuncio,
+  moverItemGaragem,
+  salvarGaragem,
+  sincronizarGaragemAnuncio,
+} from '../utils/garagem';
 
 export const useGaragem = (usuarioLogadoId) => {
   const [garagem, setGaragem] = useState({
@@ -10,27 +17,13 @@ export const useGaragem = (usuarioLogadoId) => {
 
   useEffect(() => {
     if (!usuarioLogadoId) {
-      setGaragem({ disponivel: [], negociacao: [], concluido: [] });
+      setGaragem(estadoGaragemInicial());
       return;
     }
 
-    const chaveStorage = `reveste_garagem_${usuarioLogadoId}`;
-    const dadosLocais = localStorage.getItem(chaveStorage);
-
-    try {
-      if (dadosLocais) {
-        setGaragem(JSON.parse(dadosLocais));
-        return;
-      }
-
-      const estadoInicial = { disponivel: [], negociacao: [], concluido: [] };
-      localStorage.setItem(chaveStorage, JSON.stringify(estadoInicial));
-      setGaragem(estadoInicial);
-    } catch {
-      const estadoInicial = { disponivel: [], negociacao: [], concluido: [] };
-      localStorage.setItem(chaveStorage, JSON.stringify(estadoInicial));
-      setGaragem(estadoInicial);
-    }
+    const garagemAtual = buscarGaragem(usuarioLogadoId);
+    salvarGaragem(usuarioLogadoId, garagemAtual);
+    setGaragem(garagemAtual);
   }, [usuarioLogadoId]);
 
   const moverItem = (itemId, listaOrigem, listaDestino) => {
@@ -39,23 +32,16 @@ export const useGaragem = (usuarioLogadoId) => {
     const itemParaMover = garagem[listaOrigem].find(item => item.id === itemId);
     if (!itemParaMover) return;
 
-    const novaGaragem = {
-      ...garagem,
-      [listaOrigem]: garagem[listaOrigem].filter(item => item.id !== itemId),
-      [listaDestino]: [...garagem[listaDestino], itemParaMover]
-    };
-
+    const novaGaragem = moverItemGaragem(usuarioLogadoId, itemParaMover, listaDestino);
     setGaragem(novaGaragem);
-    localStorage.setItem(`reveste_garagem_${usuarioLogadoId}`, JSON.stringify(novaGaragem));
 
-    // Sincroniza o banco de dados global de anúncios com a Garagem
-    if (listaDestino === 'concluido') {
-      atualizarStatusAnuncio(itemId, 'vendido'); 
-    } else if (listaDestino === 'disponivel') {
-      atualizarStatusAnuncio(itemId, 'ativo'); 
-    } else if (listaDestino === 'negociacao') {
-      atualizarStatusAnuncio(itemId, 'em_negociacao'); 
-    }
+    sincronizarGaragemAnuncio(
+      {
+        ...itemGaragemFromAnuncio(itemParaMover),
+        usuarioId: usuarioLogadoId,
+      },
+      listaDestino
+    );
   };
 
   return { garagem, moverItem };

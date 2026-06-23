@@ -65,7 +65,7 @@ function Cadastro() {
             type="password"
             value={dados.senha}
             onChange={(e) => update('senha', e.target.value)}
-            placeholder="minimo 6 caracteres"
+            placeholder="Minimo 6 caracteres"
           />
         </label>
         <label>

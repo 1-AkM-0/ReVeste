@@ -1,8 +1,6 @@
-import {useNegociacao}
+import { useNegociacao } from "../context/NegociacaoContext"
 
-from "../context/NegociacaoContext"
-
-export default function AcoesNegociacao({id, status}) {
+export default function AcoesNegociacao({id, status, onAceitar, onRecusar}) {
 
   const {aceitar, recusar} = useNegociacao()
 
@@ -19,10 +17,10 @@ export default function AcoesNegociacao({id, status}) {
   }
 
   return (
-    <div>
-      <button onClick={() => aceitar(id)}>Aceitar</button>
+    <div className="negociacao-acoes">
+      <button className="btn btn-primary" onClick={() => (onAceitar ?? aceitar)(id)}>Aceitar</button>
 
-      <button onClick={() => recusar(id)}>Recusar</button>
+      <button className="btn btn-ghost" onClick={() => (onRecusar ?? recusar)(id)}>Recusar</button>
     </div>
   )
 }

@@ -2,12 +2,17 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import AnuncioDetalhe from "../components/AnuncioDetalhe";
 import { useAuth } from "../context/AuthContext";
+import { useNegociacao } from "../context/NegociacaoContext";
+import { negociacaoPath, ROUTES } from "../routes";
 import { deleteAnuncio, getAnuncio, isOwner } from "../utils/anuncios";
+import { itemGaragemFromAnuncio, moverItemGaragem, sincronizarGaragemAnuncio } from "../utils/garagem";
+import { criarProposta } from "../utils/schemas";
 
 export default function DetalheAnuncio() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { usuario } = useAuth();
+  const { propostas, criar } = useNegociacao();
 
   const [anuncio, setAnuncio] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -50,6 +55,39 @@ export default function DetalheAnuncio() {
     navigate(`/anuncios/${id}/editar`);
   }
 
+  function handleNegociar() {
+    if (!usuario) {
+      navigate(ROUTES.login);
+      return;
+    }
+
+    const existente = propostas.find(
+      (proposta) =>
+        String(proposta.anuncioId) === String(anuncio.id) &&
+        String(proposta.compradorId) === String(usuario.id) &&
+        proposta.status !== "recusada" &&
+        proposta.status !== "encerrada"
+    );
+
+    if (existente) {
+      navigate(negociacaoPath(existente.id));
+      return;
+    }
+
+    const proposta = criarProposta({
+      anuncioId: anuncio.id,
+      compradorId: usuario.id,
+      vendedorId: anuncio.usuarioId,
+      tipo: anuncio.categoria === "servico" ? "servico" : "venda",
+      valorOfertado: Number(anuncio.preco || 0),
+    });
+
+    criar(proposta);
+    sincronizarGaragemAnuncio(anuncio, "negociacao");
+    moverItemGaragem(usuario.id, itemGaragemFromAnuncio(anuncio), "negociacao");
+    navigate(negociacaoPath(proposta.id));
+  }
+
   if (loading) {
     return (
       <div className="page-centered">
@@ -90,6 +128,7 @@ export default function DetalheAnuncio() {
           isOwner={dono}
           onEditar={handleEditar}
           onExcluir={handleExcluir}
+          onNegociar={handleNegociar}
         />
       </div>
 

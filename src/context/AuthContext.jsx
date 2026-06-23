@@ -131,6 +131,46 @@ export function AuthProvider({ children }) {
     atualizarPerfil({ vats: Math.max(0, Number(usuario.vats || 0) - qtd) });
   }
 
+  function transferirVATs(compradorId, vendedorId, valor) {
+    const qtd = Number(valor);
+
+    if (!Number.isFinite(qtd) || qtd <= 0) {
+      return { ok: true };
+    }
+
+    const usuarios = readUsuarios();
+    const comprador = usuarios.find((item) => String(item.id) === String(compradorId));
+    const saldoComprador = Number(comprador?.vats ?? (String(usuario?.id) === String(compradorId) ? usuario?.vats : 0));
+
+    if (saldoComprador < qtd) {
+      return { ok: false, mensagem: 'Saldo VATs insuficiente para aceitar esta negociação.' };
+    }
+
+    const atualizados = usuarios.map((item) => {
+      if (String(item.id) === String(compradorId)) {
+        return { ...item, vats: Math.max(0, Number(item.vats || 0) - qtd) };
+      }
+
+      if (String(item.id) === String(vendedorId)) {
+        return { ...item, vats: Number(item.vats || 0) + qtd };
+      }
+
+      return item;
+    });
+
+    saveUsuarios(atualizados);
+
+    const usuarioAtualizado = atualizados.find((item) => String(item.id) === String(usuario?.id));
+
+    if (usuarioAtualizado) {
+      const seguro = withoutPassword(usuarioAtualizado);
+      setStorage(STORAGE_KEY, seguro);
+      setUsuario(seguro);
+    }
+
+    return { ok: true };
+  }
+
   function logout() {
     localStorage.removeItem(STORAGE_KEY);
     setUsuario(null);
@@ -144,6 +184,7 @@ export function AuthProvider({ children }) {
     atualizarPerfil,
     comprarVATs,
     trocarVATs,
+    transferirVATs,
     logout,
   };
 

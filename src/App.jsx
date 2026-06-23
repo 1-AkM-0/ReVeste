@@ -13,6 +13,7 @@ import Explorar from "./pages/Explorar";
 import Garagem from "./pages/Garagem";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
+import Negociacoes from "./pages/Negociacoes";
 import Perfil from "./pages/Perfil";
 import "./styles/styles.css";
 
@@ -34,6 +35,8 @@ function App() {
                 <Route path={ROUTES.cadastro} element={<Cadastro />} />
                 <Route path={ROUTES.perfil} element={<Perfil />} />
                 <Route path={ROUTES.garagem} element={<Garagem />} />
+                <Route path={ROUTES.negociacoes} element={<Negociacoes />} />
+                <Route path={ROUTES.negociacaoDetalhe} element={<Negociacoes />} />
                 <Route path={ROUTES.criarAnuncio} element={<CriarAnuncio />} />
                 <Route path={ROUTES.anuncioDetalhe} element={<DetalheAnuncio />} />
                 <Route path={ROUTES.editarAnuncio} element={<EditarAnuncio />} />

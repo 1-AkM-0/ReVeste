@@ -3,7 +3,7 @@ import { useChat } from '../hooks/useChat';
 import ChatHeader from './ChatHeader';
 import '../styles/chat.css';
 
-const Chat = ({ negociacaoId, usuarioAtualId, onEncerrar }) => {
+const Chat = ({ negociacaoId, usuarioAtualId, onEncerrar, canEncerrar = true }) => {
   const { mensagens, enviarMensagem } = useChat(negociacaoId);
   const [novoTexto, setNovoTexto] = useState('');
 
@@ -16,14 +16,21 @@ const Chat = ({ negociacaoId, usuarioAtualId, onEncerrar }) => {
 
   return (
     <div className="chat-container">
-      <ChatHeader onEncerrar={onEncerrar} />
+      <ChatHeader onEncerrar={onEncerrar} canEncerrar={canEncerrar} />
       
       <div className="chat-historico">
-        {mensagens.map((msg, index) => (
-          <div key={index} className="chat-linha-msg">
+        {mensagens.length === 0 && (
+          <p className="chat-vazio">Nenhuma mensagem enviada ainda.</p>
+        )}
+
+        {mensagens.map((msg) => (
+          <div
+            key={msg.id}
+            className={`chat-linha-msg${String(msg.remetenteId) === String(usuarioAtualId) ? ' propria' : ''}`}
+          >
             <div className="chat-balao">
               <span className="chat-texto">{msg.texto}</span>
-              <span className="chat-hora">{msg.hora || '16:32'}</span>
+              <span className="chat-hora">{formatHora(msg.dataHora)}</span>
             </div>
           </div>
         ))}
@@ -44,5 +51,14 @@ const Chat = ({ negociacaoId, usuarioAtualId, onEncerrar }) => {
     </div>
   );
 };
+
+function formatHora(dataHora) {
+  if (!dataHora) return '';
+
+  return new Intl.DateTimeFormat('pt-BR', {
+    hour: '2-digit',
+    minute: '2-digit',
+  }).format(new Date(dataHora));
+}
 
 export default Chat;

@@ -1029,6 +1029,78 @@ textarea.input { resize: none; }
 .mt-1 { margin-top: 0.25rem; }
 .mt-2 { margin-top: 0.5rem; }
 
+/* ── Negociações ── */
+.negociacoes-grid {
+  display: grid;
+  grid-template-columns: minmax(14rem, 0.35fr) minmax(0, 1fr);
+  gap: 1rem;
+  align-items: start;
+}
+
+.negociacoes-lista {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.negociacao-item {
+  display: grid;
+  gap: 0.25rem;
+  width: 100%;
+  padding: 0.85rem;
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  color: var(--text);
+  background: var(--surface);
+  cursor: pointer;
+  text-align: left;
+}
+
+.negociacao-item.ativa,
+.negociacao-item:hover {
+  border-color: var(--brand);
+  background: var(--surface-soft);
+}
+
+.negociacao-item span {
+  font-weight: 800;
+}
+
+.negociacao-item small {
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.negociacao-detalhe {
+  display: grid;
+  gap: 1rem;
+}
+
+.negociacao-resumo {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.negociacao-acoes {
+  display: flex;
+  gap: 0.75rem;
+}
+
+@media (max-width: 760px) {
+  .negociacoes-grid,
+  .negociacao-resumo {
+    grid-template-columns: 1fr;
+  }
+
+  .negociacao-resumo {
+    flex-direction: column;
+  }
+
+  .chat-form {
+    flex-direction: column;
+  }
+}
+
 /* ── Dark mode overrides ── */
 :root[data-theme="dark"] body,
 :root[data-theme="dark"] .page,

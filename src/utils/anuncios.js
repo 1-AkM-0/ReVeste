@@ -1,4 +1,3 @@
-// Atualiza o status do anúncio globalmente (para sumir da busca principal)
 export const atualizarStatusAnuncio = (anuncioId, novoStatus) => {
   const dados = localStorage.getItem('reveste_anuncios');
   if (!dados) return;

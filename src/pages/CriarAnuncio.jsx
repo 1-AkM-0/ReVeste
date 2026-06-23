@@ -1,16 +1,19 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import AnuncioForm from "../components/AnuncioForm";
+import { useAuth } from "../context/AuthContext";
+import { ROUTES } from "../routes";
 import { createAnuncio } from "../utils/anuncios";
 
 export default function CriarAnuncio() {
+  const { usuario } = useAuth();
   const [loading, setLoading] = useState(false);
   const [anuncioCriado, setAnuncioCriado] = useState(null);
 
   async function handleSubmit(dados) {
     setLoading(true);
     try {
-      const anuncio = await createAnuncio(dados);
+      const anuncio = await createAnuncio(dados, usuario.id);
       setAnuncioCriado(anuncio);
     } catch (err) {
       console.error("Erro ao publicar anúncio:", err);
@@ -18,6 +21,10 @@ export default function CriarAnuncio() {
     } finally {
       setLoading(false);
     }
+  }
+
+  if (!usuario) {
+    return <Navigate to={ROUTES.login} replace />;
   }
 
   if (anuncioCriado) {

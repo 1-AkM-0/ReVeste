@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, Navigate, useParams } from "react-router-dom";
 import AnuncioForm from "../components/AnuncioForm";
+import { useAuth } from "../context/AuthContext";
+import { ROUTES } from "../routes";
 import { getAnuncio, isOwner, updateAnuncio } from "../utils/anuncios";
-
-const MOCK_USUARIO_ID = "user-123";
 
 export default function EditarAnuncio() {
   const { id } = useParams();
+  const { usuario } = useAuth();
 
   const [anuncio, setAnuncio] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -14,7 +15,7 @@ export default function EditarAnuncio() {
   const [erro, setErro] = useState(null);
   const [sucesso, setSucesso] = useState(false);
 
-  const usuarioId = MOCK_USUARIO_ID;
+  const usuarioId = usuario?.id;
 
   useEffect(() => {
     if (!id) return;
@@ -46,6 +47,10 @@ export default function EditarAnuncio() {
     } finally {
       setSaving(false);
     }
+  }
+
+  if (!usuario) {
+    return <Navigate to={ROUTES.login} replace />;
   }
 
   if (loading) {

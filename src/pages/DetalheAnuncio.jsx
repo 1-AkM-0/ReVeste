@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import AnuncioDetalhe from "../components/AnuncioDetalhe";
+import { useAuth } from "../context/AuthContext";
 import { deleteAnuncio, getAnuncio, isOwner } from "../utils/anuncios";
-
-const MOCK_USUARIO_ID = "user-123";
 
 export default function DetalheAnuncio() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { usuario } = useAuth();
 
   const [anuncio, setAnuncio] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -15,7 +15,7 @@ export default function DetalheAnuncio() {
   const [excluindo, setExcluindo] = useState(false);
   const [confirmar, setConfirmar] = useState(false);
 
-  const usuarioId = MOCK_USUARIO_ID;
+  const usuarioId = usuario?.id;
   const dono = anuncio ? isOwner(anuncio, usuarioId) : false;
 
   useEffect(() => {

@@ -1,25 +1,16 @@
-import React, { useEffect } from 'react';
-import { useGaragem } from '../hooks/useGaragem'; // Importando o hook da garagem de volta
+import React from 'react';
+import { Navigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import { useGaragem } from '../hooks/useGaragem';
+import { ROUTES } from '../routes';
 
 const Garagem = () => {
-  // Restaurando o mockup original para a tela voltar a funcionar
-  const usuarioIdTeste = 'usuario_123';
-  
-  // Trazendo as funções da garagem de volta à vida
-  const { garagem, moverItem } = useGaragem(usuarioIdTeste);
+  const { usuario } = useAuth();
+  const { garagem, moverItem } = useGaragem(usuario?.id);
 
-  // O seu useEffect para simular os itens
-  useEffect(() => {
-    const dados = localStorage.getItem(`reveste_garagem_${usuarioIdTeste}`);
-    const garagemAtual = dados ? JSON.parse(dados) : null;
-    
-    if (garagemAtual && garagemAtual.disponivel.length === 0 && garagemAtual.negociacao.length === 0 && garagemAtual.concluido.length === 0) {
-      const mockItem = { id: 'item_teste_1', titulo: 'Jaqueta Jeans Vintage' };
-      garagemAtual.disponivel.push(mockItem);
-      localStorage.setItem(`reveste_garagem_${usuarioIdTeste}`, JSON.stringify(garagemAtual));
-      window.location.reload(); 
-    }
-  }, []);
+  if (!usuario) {
+    return <Navigate to={ROUTES.login} replace />;
+  }
 
   return (
     <div style={{ padding: '2rem' }}>

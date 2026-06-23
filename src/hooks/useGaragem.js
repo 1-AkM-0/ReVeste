@@ -9,14 +9,24 @@ export const useGaragem = (usuarioLogadoId) => {
   });
 
   useEffect(() => {
-    if (!usuarioLogadoId) return;
+    if (!usuarioLogadoId) {
+      setGaragem({ disponivel: [], negociacao: [], concluido: [] });
+      return;
+    }
 
     const chaveStorage = `reveste_garagem_${usuarioLogadoId}`;
     const dadosLocais = localStorage.getItem(chaveStorage);
 
-    if (dadosLocais) {
-      setGaragem(JSON.parse(dadosLocais));
-    } else {
+    try {
+      if (dadosLocais) {
+        setGaragem(JSON.parse(dadosLocais));
+        return;
+      }
+
+      const estadoInicial = { disponivel: [], negociacao: [], concluido: [] };
+      localStorage.setItem(chaveStorage, JSON.stringify(estadoInicial));
+      setGaragem(estadoInicial);
+    } catch {
       const estadoInicial = { disponivel: [], negociacao: [], concluido: [] };
       localStorage.setItem(chaveStorage, JSON.stringify(estadoInicial));
       setGaragem(estadoInicial);
@@ -24,6 +34,8 @@ export const useGaragem = (usuarioLogadoId) => {
   }, [usuarioLogadoId]);
 
   const moverItem = (itemId, listaOrigem, listaDestino) => {
+    if (!usuarioLogadoId) return;
+
     const itemParaMover = garagem[listaOrigem].find(item => item.id === itemId);
     if (!itemParaMover) return;
 

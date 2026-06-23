@@ -1,20 +1,26 @@
 const CATEGORIAS = [
-  { value: "aluguel", label: "Aluguel"  },
-  { value: "venda",   label: "Venda"    },
-  { value: "produto", label: "Produto"  },
-  { value: "servico", label: "Serviço"  },
+  { value: "camiseta",  label: "Camiseta"   },
+  { value: "calca",     label: "Calça"      },
+  { value: "vestido",   label: "Vestido"    },
+  { value: "jaqueta",   label: "Jaqueta"    },
+  { value: "calcado",   label: "Calçado"    },
+  { value: "acessorio", label: "Acessório"  },
 ];
 
 const TAMANHOS = [
-  { value: "pequeno", label: "Pequeno" },
-  { value: "medio",   label: "Médio"   },
-  { value: "grande",  label: "Grande"  },
+  { value: "pp",  label: "PP"  },
+  { value: "p",   label: "P"   },
+  { value: "m",   label: "M"   },
+  { value: "g",   label: "G"   },
+  { value: "gg",  label: "GG"  },
+  { value: "xgg", label: "XGG" },
 ];
 
-const MODALIDADES = [
-  { value: "presencial", label: "Presencial" },
-  { value: "remoto",     label: "Remoto"     },
-  { value: "hibrido",    label: "Híbrido"    },
+const GENEROS = [
+  { value: "masculino", label: "Masculino"  },
+  { value: "feminino",  label: "Feminino"   },
+  { value: "unissex",   label: "Unissex"    },
+  { value: "infantil",  label: "Infantil"   },
 ];
 
 const VATS = [
@@ -67,8 +73,6 @@ export default function FiltrosAnuncios({
   layout = "lateral",
 }) {
   const isLateral = layout === "lateral";
-  const mostrarModalidade = !filtros.categoria || filtros.categoria === "servico";
-  const mostrarTamanho    = !filtros.categoria || ["aluguel", "venda", "produto"].includes(filtros.categoria);
 
   return (
     <aside
@@ -95,33 +99,25 @@ export default function FiltrosAnuncios({
           <Chips
             opcoes={CATEGORIAS}
             valor={filtros.categoria}
-            onChange={(v) => {
-              setFiltro("categoria", v);
-              setFiltro("tamanho", "");
-              setFiltro("modalidade", "");
-            }}
+            onChange={(v) => setFiltro("categoria", v)}
           />
         </GrupoFiltro>
 
-        {mostrarTamanho && (
-          <GrupoFiltro titulo="Tamanho">
-            <Chips
-              opcoes={TAMANHOS}
-              valor={filtros.tamanho}
-              onChange={(v) => setFiltro("tamanho", v)}
-            />
-          </GrupoFiltro>
-        )}
+        <GrupoFiltro titulo="Tamanho">
+          <Chips
+            opcoes={TAMANHOS}
+            valor={filtros.tamanho}
+            onChange={(v) => setFiltro("tamanho", v)}
+          />
+        </GrupoFiltro>
 
-        {mostrarModalidade && (
-          <GrupoFiltro titulo="Modalidade">
-            <Chips
-              opcoes={MODALIDADES}
-              valor={filtros.modalidade}
-              onChange={(v) => setFiltro("modalidade", v)}
-            />
-          </GrupoFiltro>
-        )}
+        <GrupoFiltro titulo="Gênero">
+          <Chips
+            opcoes={GENEROS}
+            valor={filtros.genero}
+            onChange={(v) => setFiltro("genero", v)}
+          />
+        </GrupoFiltro>
 
         <GrupoFiltro titulo="Nota fiscal (VAT)">
           <Chips

@@ -9,26 +9,28 @@ import {
 } from "../utils/validations";
 
 const CATEGORIAS = [
-  { value: "aluguel", label: "Imóvel para aluguel" },
-  { value: "venda",   label: "Imóvel para venda"   },
-  { value: "produto", label: "Produto"              },
-  { value: "servico", label: "Serviço"              },
+  { value: "camiseta", label: "Camiseta" },
+  { value: "calca", label: "Calça" },
+  { value: "vestido", label: "Vestido" },
+  { value: "saia", label: "Saia" },
+  { value: "shorts", label: "Shorts" },
+  { value: "jaqueta", label: "Jaqueta" },
+  { value: "calcado", label: "Calçado" },
+  { value: "acessorio", label: "Acessório" },
 ];
 
 const TAMANHOS = [
-  { value: "pequeno", label: "Pequeno" },
-  { value: "medio",   label: "Médio"   },
-  { value: "grande",  label: "Grande"  },
-];
-
-const MODALIDADES = [
-  { value: "presencial", label: "Presencial" },
-  { value: "remoto",     label: "Remoto"     },
-  { value: "hibrido",    label: "Híbrido"    },
+  { value: "PP", label: "PP" },
+  { value: "P", label: "P" },
+  { value: "M", label: "M" },
+  { value: "G", label: "G" },
+  { value: "GG", label: "GG" },
+  { value: "XGG", label: "XGG" },
 ];
 
 const initialForm = {
   titulo: "",
+  marca: "",
   categoria: "",
   descricao: "",
   preco: "",
@@ -37,7 +39,6 @@ const initialForm = {
   cidade: "",
   estado: "",
   tamanho: "",
-  modalidade: "",
   vat: false,
   imagens: [],
   fotoUrl: "",
@@ -81,9 +82,8 @@ export default function AnuncioForm({
   function set(field, value) {
     setForm((current) => {
       const next = { ...current, [field]: value };
-      if (field === "categoria") {
-        if (!["aluguel", "venda", "produto"].includes(value)) next.tamanho = "";
-        if (value !== "servico") next.modalidade = "";
+      if (field === "categoria" && !value) {
+        next.tamanho = "";
       }
       return next;
     });
@@ -151,15 +151,14 @@ export default function AnuncioForm({
     onSubmit?.(sanitizeAnuncioForm(form));
   }
 
-  const mostrarTamanho    = ["aluguel", "venda", "produto"].includes(form.categoria);
-  const mostrarModalidade = form.categoria === "servico";
+  const mostrarTamanho = Boolean(form.categoria);
 
   return (
     <form onSubmit={handleSubmit} noValidate className="form-space">
       <Field label="Título" error={errors.titulo} required>
         <input
           type="text"
-          placeholder="Ex: Apartamento 2 quartos próximo ao centro"
+          placeholder="Ex: Jaqueta Jeans Vintage"
           value={form.titulo}
           onChange={(e) => set("titulo", e.target.value)}
           className={`input${errors.titulo ? " error" : ""}`}
@@ -182,6 +181,16 @@ export default function AnuncioForm({
         </select>
       </Field>
 
+      <Field label="Marca">
+        <input
+          type="text"
+          placeholder="Ex: Nike, Adidas, Zara, Renner..."
+          value={form.marca || ""}
+          onChange={(e) => set("marca", e.target.value)}
+          className="input"
+        />
+      </Field>
+
       {mostrarTamanho && (
         <Field label="Tamanho" error={errors.tamanho}>
           <select
@@ -197,24 +206,9 @@ export default function AnuncioForm({
         </Field>
       )}
 
-      {mostrarModalidade && (
-        <Field label="Modalidade" error={errors.modalidade}>
-          <select
-            value={form.modalidade}
-            onChange={(e) => set("modalidade", e.target.value)}
-            className={`input${errors.modalidade ? " error" : ""}`}
-          >
-            <option value="">Selecione...</option>
-            {MODALIDADES.map((m) => (
-              <option key={m.value} value={m.value}>{m.label}</option>
-            ))}
-          </select>
-        </Field>
-      )}
-
       <Field label="Descrição" error={errors.descricao} required>
         <textarea
-          placeholder="Descreva o seu anúncio com detalhes: estado de conservação, medidas, condições, etc."
+          placeholder="Informe marca, tamanho, cor, tecido, estado de conservação e demais detalhes da peça."
           value={form.descricao}
           onChange={(e) => set("descricao", e.target.value)}
           className={`input${errors.descricao ? " error" : ""}`}
@@ -254,7 +248,7 @@ export default function AnuncioForm({
               checked={form.vat}
               onChange={(e) => set("vat", e.target.checked)}
             />
-            Possui nota fiscal
+              Possui etiqueta original
           </label>
         </div>
       </div>

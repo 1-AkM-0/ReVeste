@@ -3,7 +3,6 @@ import { Navigate } from 'react-router-dom';
 import ReputacaoBadge from '../components/ReputacaoBadge';
 import SaldoVATs from '../components/SaldoVATs';
 import SelosConfiabilidade from '../components/SelosConfiabilidade';
-import GraficoVATs from '../components/GraficoVATs';
 import { useAuth } from '../context/AuthContext';
 import { ROUTES } from '../routes';
 import { calcularReputacao } from '../utils/avaliacoes';
@@ -63,8 +62,6 @@ function Perfil() {
           </div>
         </article>
       </div>
-
-      <GraficoVATs />
     </section>
   );
 }

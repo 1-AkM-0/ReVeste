@@ -9,6 +9,7 @@
   --border: #d9ded8;
   --brand: #176b4d;
   --brand-dark: #16382c;
+  --lime: #dce8a7;
   font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -25,6 +26,7 @@
   --border: #2f4038;
   --brand: #58c797;
   --brand-dark: #d8f5e7;
+  --lime: #b8cc5c;
 }
 
 * {
@@ -474,6 +476,40 @@ main {
 .saldo-actions .ghost-button {
   color: var(--brand-dark);
   background: #ffffff;
+}
+
+.mini-chart {
+  height: 100px;
+  display: flex;
+  gap: 5px;
+  align-items: end;
+  border-top: 1px solid #ffffff33;
+  margin-top: 18px;
+  padding-top: 30px;
+  position: relative;
+}
+
+.mini-chart h4 {
+  position: absolute;
+  top: 0;
+  margin: 6px 0;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: rgb(255 255 255 / 0.7);
+}
+
+.mini-chart i {
+  background: var(--lime);
+  flex: 1;
+  min-height: 5px;
+  border-radius: 3px 3px 0 0;
+  transition: opacity 0.2s;
+}
+
+.mini-chart i:hover {
+  opacity: 0.7;
 }
 
 .wide-card {

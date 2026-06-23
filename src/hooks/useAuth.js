@@ -1,8 +1,1 @@
-export const useAuth = () => {
-  return {
-    user: {
-      id: 'usuario_123',
-      nome: 'Jhonatan Lobo'
-    }
-  };
-};
+export { useAuth } from '../context/AuthContext';

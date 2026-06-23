@@ -1,105 +1,126 @@
-import { useNegociacao } from '../context/NegociacaoContext'
-
-import AcoesNegociacao from '../components/AcoesNegociacao'
-import EnviarProposta from '../components/EnviarProposta'
-import SugestaoVATs from '../components/SugestaoVATs'
-import TimelineProposta from '../components/TimelineProposta'
+import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import Busca from "../components/Busca";
+import FiltrosAnuncios from "../components/FiltrosAnuncios";
+import { useFiltros } from "../hooks/useFiltros";
+import { listAnuncios } from "../utils/anuncios";
+import AnuncioCard from "./AnuncioCard";
 
 function Explorar() {
-  const { propostas } = useNegociacao()
+  const navigate = useNavigate();
+  const [anuncios, setAnuncios] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [erro, setErro] = useState(null);
 
-  const anuncio = {
-    id: 1,
-    usuarioId: 1,
-    titulo: 'Jaqueta Jeans',
-    descricao: 'Jaqueta jeans azul em ótimo estado.',
-    valor: 35
-  }
+  const {
+    filtros,
+    setFiltro,
+    limpar,
+    limparBusca,
+    resultado,
+    total,
+    temFiltrosAtivos,
+    quantidadeFiltrosAtivos,
+  } = useFiltros(anuncios);
 
-  const usuario = {
-    id: 2,
-    nome: 'Jônatas'
-  }
+  useEffect(() => {
+    let ativo = true;
+
+    setLoading(true);
+    setErro(null);
+
+    listAnuncios()
+      .then((data) => {
+        if (ativo) setAnuncios(data);
+      })
+      .catch(() => {
+        if (ativo) setErro("Não foi possível carregar os anúncios.");
+      })
+      .finally(() => {
+        if (ativo) setLoading(false);
+      });
+
+    return () => {
+      ativo = false;
+    };
+  }, []);
 
   return (
-    <section>
-      <p className="eyebrow">
-        Descubra
-      </p>
+    <section className="space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+        <div>
+          <p className="eyebrow">Descubra</p>
+          <h1>Explorar anúncios</h1>
+          <p className="text-sm text-gray-500">
+            {loading ? "Carregando anúncios..." : `${total} anúncio${total === 1 ? "" : "s"} encontrado${total === 1 ? "" : "s"}.`}
+          </p>
+        </div>
 
-      <h1>
-        Explorar peças
-      </h1>
-
-      <article
-        style={{
-          border: '1px solid #ddd',
-          borderRadius: '8px',
-          padding: '1rem',
-          marginTop: '1rem'
-        }}
-      >
-        <h2>
-          {anuncio.titulo}
-        </h2>
-
-        <p>
-          {anuncio.descricao}
-        </p>
-
-        <p>
-          <strong>
-            Valor:
-          </strong>{' '}
-          {anuncio.valor} VATs
-        </p>
-
-        <SugestaoVATs
-          valorAnuncio={anuncio.valor}
-          valorOferta={30}
-        />
-
-        <EnviarProposta
-          anuncio={anuncio}
-          usuario={usuario}
-        />
-      </article>
-
-      {propostas.map((proposta) => (
-        <article
-          key={proposta.id}
-          style={{
-            border: '1px solid #ddd',
-            borderRadius: '8px',
-            padding: '1rem',
-            marginTop: '1rem'
-          }}
+        <Link
+          to="/anuncios/novo"
+          className="inline-flex items-center justify-center px-4 py-2 bg-gray-900 text-white rounded-xl text-sm font-medium hover:bg-gray-800 transition-colors"
         >
-          <h3>
-            Proposta #{proposta.id}
-          </h3>
+          Novo anúncio
+        </Link>
+      </div>
 
-          <p>
-            Status: {proposta.status}
-          </p>
+      <Busca
+        value={filtros.busca}
+        onChange={(value) => setFiltro("busca", value)}
+        onClear={limparBusca}
+        anuncios={anuncios}
+      />
 
-          <p>
-            Valor ofertado: {proposta.valorOfertado} VATs
-          </p>
+      {erro && (
+        <div className="rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-600">
+          {erro}
+        </div>
+      )}
 
-          <AcoesNegociacao
-            id={proposta.id}
+      <div className="grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-6">
+        <FiltrosAnuncios
+          filtros={filtros}
+          setFiltro={setFiltro}
+          limpar={limpar}
+          temFiltrosAtivos={temFiltrosAtivos}
+          quantidadeFiltrosAtivos={quantidadeFiltrosAtivos}
+        />
 
-            status={proposta.status}
-          />
-
-          <TimelineProposta
-            historico={proposta.historico}
-          />
-        </article>
-      ))}
+        <div>
+          {loading ? (
+            <div className="bg-white border border-gray-100 rounded-2xl p-8 text-center text-sm text-gray-400">
+              Carregando...
+            </div>
+          ) : resultado.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+              {resultado.map((anuncio) => (
+                <AnuncioCard
+                  key={anuncio.id}
+                  anuncio={anuncio}
+                  onClick={() => navigate(`/anuncios/${anuncio.id}`)}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="bg-white border border-gray-100 rounded-2xl p-8 text-center">
+              <h2 className="text-base font-semibold text-gray-900 mb-1">
+                Nenhum anúncio encontrado
+              </h2>
+              <p className="text-sm text-gray-500 mb-4">
+                Ajuste os filtros ou publique um novo anúncio.
+              </p>
+              <Link
+                to="/anuncios/novo"
+                className="inline-flex items-center justify-center px-4 py-2 bg-gray-900 text-white rounded-xl text-sm font-medium hover:bg-gray-800 transition-colors"
+              >
+                Criar anúncio
+              </Link>
+            </div>
+          )}
+        </div>
+      </div>
     </section>
-  )
+  );
 }
 
-export default Explorar
+export default Explorar;

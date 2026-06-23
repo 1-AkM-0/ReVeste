@@ -6,7 +6,8 @@ export default function AnuncioDetalhe({ anuncio, isOwner, onEditar, onExcluir }
   const badge = CATEGORIAS[anuncio.categoria] ?? { label: anuncio.categoria, bg: "bg-gray-100", text: "text-gray-600" };
   const temFotos = anuncio.imagens?.length > 0;
 
-  const whatsappUrl = `https://wa.me/55${anuncio.contato.replace(/\D/g, "")}?text=${encodeURIComponent(
+  const telefone = String(anuncio.contato ?? "").replace(/\D/g, "");
+  const whatsappUrl = `https://wa.me/55${telefone}?text=${encodeURIComponent(
     `Olá! Vi seu anúncio "${anuncio.titulo}" e tenho interesse.`
   )}`;
 

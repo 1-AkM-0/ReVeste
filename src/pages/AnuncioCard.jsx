@@ -1,28 +1,17 @@
-const BADGE = {
-  aluguel: { label: "Aluguel",  bg: "bg-blue-50",   text: "text-blue-700" },
-  venda:   { label: "Venda",    bg: "bg-green-50",  text: "text-green-700" },
-  produto: { label: "Produto",  bg: "bg-amber-50",  text: "text-amber-700" },
-  servico: { label: "Serviço",  bg: "bg-purple-50", text: "text-purple-700" },
-};
-
-function formatPreco(preco, negociavel) {
-  if (!preco) return negociavel ? "A combinar" : "Sob consulta";
-  const valor = Number(preco).toLocaleString("pt-BR", {
-    style: "currency",
-    currency: "BRL",
-  });
-  return negociavel ? `${valor} (negociável)` : valor;
-}
+import { CATEGORIAS, formatPreco } from "../utils/anuncios";
 
 export default function AnuncioCard({ anuncio, onClick }) {
-  const badge = BADGE[anuncio.categoria] ?? { label: anuncio.categoria, bg: "bg-gray-100", text: "text-gray-600" };
+  const badge = CATEGORIAS[anuncio.categoria] ?? {
+    label: anuncio.categoria || "Anúncio",
+    bg: "bg-gray-100",
+    text: "text-gray-600",
+  };
 
   return (
     <article
       onClick={() => onClick?.(anuncio)}
       className="bg-white border border-gray-100 rounded-2xl overflow-hidden cursor-pointer hover:border-gray-300 hover:shadow-sm transition-all active:scale-[0.99] group"
     >
-        
       <div className="w-full h-40 bg-gray-50 overflow-hidden">
         {anuncio.imagens?.[0] ? (
           <img

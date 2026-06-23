@@ -1,5 +1,3 @@
-import { FILTROS_PADRAO } from "../hooks/useFiltros";
-
 const CATEGORIAS = [
   { value: "aluguel", label: "Aluguel"  },
   { value: "venda",   label: "Venda"    },

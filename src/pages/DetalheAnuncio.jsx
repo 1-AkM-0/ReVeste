@@ -1,24 +1,29 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import AnuncioDetalhe from "../components/AnuncioDetalhe";
-import { getAnuncio, deleteAnuncio, isOwner } from "../utils/anuncios";
+import { deleteAnuncio, getAnuncio, isOwner } from "../utils/anuncios";
 
 const MOCK_USUARIO_ID = "user-123";
 
-export default function DetalheAnuncio({ params }) {
-  const id = params?.id;
+export default function DetalheAnuncio() {
+  const { id } = useParams();
+  const navigate = useNavigate();
 
-  const [anuncio, setAnuncio]       = useState(null);
-  const [loading, setLoading]       = useState(true);
-  const [erro, setErro]             = useState(null);
-  const [excluindo, setExcluindo]   = useState(false);
-  const [confirmar, setConfirmar]   = useState(false);
+  const [anuncio, setAnuncio] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [erro, setErro] = useState(null);
+  const [excluindo, setExcluindo] = useState(false);
+  const [confirmar, setConfirmar] = useState(false);
 
   const usuarioId = MOCK_USUARIO_ID;
   const dono = anuncio ? isOwner(anuncio, usuarioId) : false;
 
   useEffect(() => {
     if (!id) return;
+
     setLoading(true);
+    setErro(null);
+
     getAnuncio(id)
       .then(setAnuncio)
       .catch(() => setErro("Não foi possível carregar o anúncio."))
@@ -30,10 +35,11 @@ export default function DetalheAnuncio({ params }) {
       setConfirmar(true);
       return;
     }
+
     setExcluindo(true);
     try {
       await deleteAnuncio(id);
-      window.location.href = "/explorar";
+      navigate("/explorar");
     } catch {
       alert("Erro ao excluir o anúncio. Tente novamente.");
       setExcluindo(false);
@@ -42,9 +48,8 @@ export default function DetalheAnuncio({ params }) {
   }
 
   function handleEditar() {
-    window.location.href = `/anuncios/${id}/editar`;
+    navigate(`/anuncios/${id}/editar`);
   }
-
 
   if (loading) {
     return (
@@ -65,9 +70,9 @@ export default function DetalheAnuncio({ params }) {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
         <div className="text-center">
           <p className="text-gray-500 mb-4">{erro ?? "Anúncio não encontrado."}</p>
-          <a href="/explorar" className="text-sm text-gray-700 underline underline-offset-2 hover:text-gray-900">
+          <Link to="/explorar" className="text-sm text-gray-700 underline underline-offset-2 hover:text-gray-900">
             Voltar para Explorar
-          </a>
+          </Link>
         </div>
       </div>
     );
@@ -76,15 +81,15 @@ export default function DetalheAnuncio({ params }) {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-4xl mx-auto px-4 py-8">
-        <a
-          href="/explorar"
+        <Link
+          to="/explorar"
           className="inline-flex items-center gap-1.5 text-sm text-gray-400 hover:text-gray-700 mb-6 transition-colors"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
           </svg>
           Explorar
-        </a>
+        </Link>
 
         <AnuncioDetalhe
           anuncio={anuncio}
@@ -110,6 +115,7 @@ export default function DetalheAnuncio({ params }) {
             </p>
             <div className="flex gap-2">
               <button
+                type="button"
                 onClick={() => setConfirmar(false)}
                 disabled={excluindo}
                 className="flex-1 py-2.5 text-sm border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors text-gray-700 disabled:opacity-50"
@@ -117,6 +123,7 @@ export default function DetalheAnuncio({ params }) {
                 Cancelar
               </button>
               <button
+                type="button"
                 onClick={handleExcluir}
                 disabled={excluindo}
                 className="flex-1 py-2.5 text-sm bg-red-500 hover:bg-red-600 text-white rounded-xl transition-colors font-medium disabled:opacity-50"

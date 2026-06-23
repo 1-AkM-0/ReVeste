@@ -1,5 +1,5 @@
 export function normalizar(str = "") {
-  return str
+  return String(str ?? "")
     .toLowerCase()
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
@@ -7,87 +7,91 @@ export function normalizar(str = "") {
 }
 
 function score(anuncio, termo) {
-  if (!termo) return 1; 
+  if (!termo) return 1;
+
   const t = normalizar(termo);
+  const titulo = normalizar(anuncio?.titulo);
+  const descricao = normalizar(anuncio?.descricao);
+  const cidade = normalizar(anuncio?.cidade);
+  const estado = normalizar(anuncio?.estado);
+  const categoria = normalizar(anuncio?.categoria);
 
-  const titulo    = normalizar(anuncio.titulo ?? "");
-  const descricao = normalizar(anuncio.descricao ?? "");
-  const cidade    = normalizar(anuncio.cidade ?? "");
-  const estado    = normalizar(anuncio.estado ?? "");
+  let pontos = 0;
+  if (titulo.startsWith(t)) pontos += 10;
+  else if (titulo.includes(t)) pontos += 6;
+  if (descricao.includes(t)) pontos += 3;
+  if (cidade.includes(t)) pontos += 4;
+  if (estado.includes(t)) pontos += 2;
+  if (categoria.includes(t)) pontos += 1;
 
-  let pts = 0;
-  if (titulo.startsWith(t))    pts += 10;
-  else if (titulo.includes(t)) pts += 6;
-  if (descricao.includes(t))   pts += 3;
-  if (cidade.includes(t))      pts += 4;
-  if (estado.includes(t))      pts += 2;
-
-  return pts;
+  return pontos;
 }
-  
-   @param {Array}  anuncios 
-   @param {string} termo    
-   @returns {Array} 
 
-export function buscarAnuncios(anuncios, termo) {
-  if (!termo?.trim()) return anuncios;
+export function buscarAnuncios(anuncios = [], termo = "") {
+  if (!Array.isArray(anuncios)) return [];
+  if (!termo?.trim()) return [...anuncios];
+
+  const busca = termo.trim();
 
   return anuncios
-    .map((a) => ({ anuncio: a, pts: score(a, termo.trim()) }))
-    .filter(({ pts }) => pts > 0)
-    .sort((a, b) => b.pts - a.pts)
+    .map((anuncio) => ({ anuncio, pontos: score(anuncio, busca) }))
+    .filter(({ pontos }) => pontos > 0)
+    .sort((a, b) => b.pontos - a.pontos)
     .map(({ anuncio }) => anuncio);
 }
-  
-   @param {string} texto
-   @param {string} termo
-   @returns {Array<{ texto: string, destaque: boolean }>}
-  
-   @example
 
 export function highlight(texto = "", termo = "") {
   if (!termo.trim()) return [{ texto, destaque: false }];
 
-  const t = normalizar(termo.trim());
+  const busca = normalizar(termo.trim());
   const partes = [];
   let cursor = 0;
 
-  const textoNorm = normalizar(texto);
-  let idx = textoNorm.indexOf(t, cursor);
+  const textoSeguro = String(texto ?? "");
+  const textoNormalizado = normalizar(textoSeguro);
+  let index = textoNormalizado.indexOf(busca, cursor);
 
-  while (idx !== -1) {
-    if (idx > cursor) partes.push({ texto: texto.slice(cursor, idx), destaque: false });
-    partes.push({ texto: texto.slice(idx, idx + t.length), destaque: true });
-    cursor = idx + t.length;
-    idx = textoNorm.indexOf(t, cursor);
+  while (index !== -1) {
+    if (index > cursor) {
+      partes.push({ texto: textoSeguro.slice(cursor, index), destaque: false });
+    }
+
+    partes.push({ texto: textoSeguro.slice(index, index + busca.length), destaque: true });
+    cursor = index + busca.length;
+    index = textoNormalizado.indexOf(busca, cursor);
   }
 
-  if (cursor < texto.length) partes.push({ texto: texto.slice(cursor), destaque: false });
+  if (cursor < textoSeguro.length) {
+    partes.push({ texto: textoSeguro.slice(cursor), destaque: false });
+  }
+
   return partes;
 }
-  
-   @param {Array}  anuncios
-   @param {string} termo
-   @param {number} limite
-   @returns {string[]}
 
-export function sugestoes(anuncios, termo, limite = 5) {
-  if (!termo || termo.length < 2) return [];
-  const t = normalizar(termo);
+export function sugestoes(anuncios = [], termo = "", limite = 5) {
+  if (!Array.isArray(anuncios) || !termo || termo.length < 2) return [];
 
+  const busca = normalizar(termo);
   const candidatos = new Set();
-  for (const a of anuncios) {
-    if (normalizar(a.titulo).includes(t))  candidatos.add(a.titulo);
-    if (normalizar(a.cidade).includes(t))  candidatos.add(a.cidade);
+
+  for (const anuncio of anuncios) {
+    const titulo = String(anuncio?.titulo ?? "");
+    const cidade = String(anuncio?.cidade ?? "");
+
+    if (normalizar(titulo).includes(busca)) candidatos.add(titulo);
+    if (normalizar(cidade).includes(busca)) candidatos.add(cidade);
     if (candidatos.size >= limite * 2) break;
   }
 
   return [...candidatos]
+    .filter(Boolean)
     .sort((a, b) => {
-      const an = normalizar(a), bn = normalizar(b);
-      const aStart = an.startsWith(t) ? 0 : 1;
-      const bStart = bn.startsWith(t) ? 0 : 1;
-      return aStart - bStart || a.localeCompare(b, "pt-BR");
+      const aNormalizado = normalizar(a);
+      const bNormalizado = normalizar(b);
+      const aInicio = aNormalizado.startsWith(busca) ? 0 : 1;
+      const bInicio = bNormalizado.startsWith(busca) ? 0 : 1;
+
+      return aInicio - bInicio || a.localeCompare(b, "pt-BR");
     })
     .slice(0, limite);
 }

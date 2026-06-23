@@ -1,39 +1,45 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import { Link, useParams } from "react-router-dom";
 import AnuncioForm from "../components/AnuncioForm";
-import { getAnuncio, updateAnuncio, isOwner } from "../utils/anuncios";
+import { getAnuncio, isOwner, updateAnuncio } from "../utils/anuncios";
 
 const MOCK_USUARIO_ID = "user-123";
 
-export default function EditarAnuncio({ params }) {
-  const id = params?.id;
+export default function EditarAnuncio() {
+  const { id } = useParams();
 
-  const [anuncio, setAnuncio]   = useState(null);
-  const [loading, setLoading]   = useState(true);
-  const [saving, setSaving]     = useState(false);
-  const [erro, setErro]         = useState(null);
-  const [sucesso, setSucesso]   = useState(false);
+  const [anuncio, setAnuncio] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [erro, setErro] = useState(null);
+  const [sucesso, setSucesso] = useState(false);
 
-  const usuarioId = MOCK_USUARIO_ID; 
+  const usuarioId = MOCK_USUARIO_ID;
 
   useEffect(() => {
     if (!id) return;
+
     setLoading(true);
+    setErro(null);
+
     getAnuncio(id)
       .then((data) => {
         if (!isOwner(data, usuarioId)) {
           setErro("Você não tem permissão para editar este anúncio.");
           return;
         }
+
         setAnuncio(data);
       })
       .catch(() => setErro("Não foi possível carregar o anúncio."))
       .finally(() => setLoading(false));
-  }, [id]);
+  }, [id, usuarioId]);
 
   async function handleSubmit(dados) {
     setSaving(true);
     try {
-      await updateAnuncio(id, dados);
+      const atualizado = await updateAnuncio(id, dados);
+      setAnuncio(atualizado);
       setSucesso(true);
     } catch {
       alert("Erro ao salvar as alterações. Tente novamente.");
@@ -61,9 +67,9 @@ export default function EditarAnuncio({ params }) {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
         <div className="text-center">
           <p className="text-gray-500 mb-4">{erro ?? "Anúncio não encontrado."}</p>
-          <a href="/explorar" className="text-sm text-gray-700 underline underline-offset-2 hover:text-gray-900">
+          <Link to="/explorar" className="text-sm text-gray-700 underline underline-offset-2 hover:text-gray-900">
             Voltar para Explorar
-          </a>
+          </Link>
         </div>
       </div>
     );
@@ -83,13 +89,14 @@ export default function EditarAnuncio({ params }) {
             O anúncio foi atualizado com sucesso.
           </p>
           <div className="flex flex-col gap-2">
-            <a
-              href={`/anuncios/${id}`}
+            <Link
+              to={`/anuncios/${id}`}
               className="w-full py-2.5 bg-gray-900 text-white rounded-xl text-sm font-medium hover:bg-gray-800 transition-colors text-center"
             >
               Ver anúncio
-            </a>
+            </Link>
             <button
+              type="button"
               onClick={() => setSucesso(false)}
               className="w-full py-2.5 text-gray-600 rounded-xl text-sm hover:bg-gray-100 transition-colors"
             >
@@ -105,15 +112,15 @@ export default function EditarAnuncio({ params }) {
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-xl mx-auto px-4 py-8">
         <div className="mb-6">
-          <a
-            href={`/anuncios/${id}`}
+          <Link
+            to={`/anuncios/${id}`}
             className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700 mb-4 transition-colors"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
             </svg>
             Voltar para o anúncio
-          </a>
+          </Link>
           <h1 className="text-2xl font-semibold text-gray-900">Editar anúncio</h1>
           <p className="text-sm text-gray-500 mt-1">
             Atualize as informações do seu anúncio.

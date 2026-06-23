@@ -1,57 +1,68 @@
-import { useState, useMemo, useCallback } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { buscarAnuncios } from "../utils/search";
+import { isBlank } from "../utils/validations";
 
 export const FILTROS_PADRAO = {
-  busca:      "",
-  categoria:  "",       
-  tamanho:    "",     
-  modalidade: "",      
-  vat:        "",       
-  ordem:      "recente", 
+  busca: "",
+  categoria: "",
+  tamanho: "",
+  modalidade: "",
+  vat: "",
+  ordem: "recente",
 };
 
-function aplicarFiltros(anuncios, filtros) {
-  let lista = buscarAnuncios(anuncios, filtros.busca);
+function precoOrdenavel(preco, fallback) {
+  if (isBlank(preco)) return fallback;
 
-  if (filtros.categoria) {
-    lista = lista.filter((a) => a.categoria === filtros.categoria);
-  }
-
-  if (filtros.tamanho) {
-    lista = lista.filter((a) => a.tamanho === filtros.tamanho);
-  }
-
-  if (filtros.modalidade) {
-    lista = lista.filter((a) => a.modalidade === filtros.modalidade);
-  }
-
-  if (filtros.vat === "com_vat") {
-    lista = lista.filter((a) => a.vat === true);
-  } else if (filtros.vat === "sem_vat") {
-    lista = lista.filter((a) => !a.vat);
-  }
-
-  if (!filtros.busca.trim()) {
-    if (filtros.ordem === "menor_preco") {
-      lista = [...lista].sort((a, b) => (a.preco ?? Infinity) - (b.preco ?? Infinity));
-    } else if (filtros.ordem === "maior_preco") {
-      lista = [...lista].sort((a, b) => (b.preco ?? 0) - (a.preco ?? 0));
-    }
-  }
-
-  return lista;
+  const valor = Number(preco);
+  return Number.isFinite(valor) ? valor : fallback;
 }
-  @param {Array} anuncios - lista bruta vinda da API
-  @returns {{
-    filtros: object,
-    setFiltro: (campo, valor) => void,
-    limpar: () => void,
-    limparBusca: () => void,
-    resultado: Array,
-    total: number,
-    temFiltrosAtivos: boolean,
-    quantidadeFiltrosAtivos: number,
-   }}
+
+function dataOrdenavel(data) {
+  const timestamp = new Date(data ?? 0).getTime();
+  return Number.isNaN(timestamp) ? 0 : timestamp;
+}
+
+export function aplicarFiltros(anuncios = [], filtros = FILTROS_PADRAO) {
+  const filtrosAtuais = { ...FILTROS_PADRAO, ...filtros };
+  let lista = buscarAnuncios(anuncios, filtrosAtuais.busca);
+
+  if (filtrosAtuais.categoria) {
+    lista = lista.filter((anuncio) => anuncio.categoria === filtrosAtuais.categoria);
+  }
+
+  if (filtrosAtuais.tamanho) {
+    lista = lista.filter((anuncio) => anuncio.tamanho === filtrosAtuais.tamanho);
+  }
+
+  if (filtrosAtuais.modalidade) {
+    lista = lista.filter((anuncio) => anuncio.modalidade === filtrosAtuais.modalidade);
+  }
+
+  if (filtrosAtuais.vat === "com_vat") {
+    lista = lista.filter((anuncio) => anuncio.vat === true);
+  } else if (filtrosAtuais.vat === "sem_vat") {
+    lista = lista.filter((anuncio) => anuncio.vat !== true);
+  }
+
+  if (filtrosAtuais.busca.trim()) {
+    return lista;
+  }
+
+  if (filtrosAtuais.ordem === "menor_preco") {
+    return [...lista].sort(
+      (a, b) => precoOrdenavel(a.preco, Infinity) - precoOrdenavel(b.preco, Infinity),
+    );
+  }
+
+  if (filtrosAtuais.ordem === "maior_preco") {
+    return [...lista].sort(
+      (a, b) => precoOrdenavel(b.preco, -Infinity) - precoOrdenavel(a.preco, -Infinity),
+    );
+  }
+
+  return [...lista].sort((a, b) => dataOrdenavel(b.criadoEm) - dataOrdenavel(a.criadoEm));
+}
 
 export function useFiltros(anuncios = []) {
   const [filtros, setFiltros] = useState(FILTROS_PADRAO);
@@ -70,7 +81,7 @@ export function useFiltros(anuncios = []) {
 
   const resultado = useMemo(
     () => aplicarFiltros(anuncios, filtros),
-    [anuncios, filtros]
+    [anuncios, filtros],
   );
 
   const quantidadeFiltrosAtivos = useMemo(() => {

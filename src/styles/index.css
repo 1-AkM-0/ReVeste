@@ -61,6 +61,23 @@ select {
   position: relative;
 }
 
+.vats-pill {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 0.9rem;
+  border-radius: 999px;
+  background: #176b4d;
+  color: white;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.vats-pill small {
+  opacity: 0.8;
+  font-size: 0.75rem;
+}
+
 .site-header nav {
   display: flex;
   gap: 1rem;

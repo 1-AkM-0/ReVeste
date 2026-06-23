@@ -39,7 +39,6 @@ function Navbar() {
         ))}
 
         {!usuario && <NavLink to={ROUTES.cadastro}>Cadastro</NavLink>}
-        {usuario && <span className="user-pill">{usuario.nome}</span>}
         {usuario && (
           <button className="link-button" type="button" onClick={handleLogout}>
             Sair
@@ -48,6 +47,17 @@ function Navbar() {
         <button className="theme-toggle" type="button" onClick={toggleTheme}>
           {isDark ? 'Claro' : 'Escuro'}
         </button>
+        {usuario && (
+          <>
+            <span className="vats-pill">
+              {usuario.vats ?? 0} VATs
+            </span>
+
+            <span className="user-pill">
+              {usuario.nome}
+            </span>
+          </>
+        )}
       </nav>
 
       <button

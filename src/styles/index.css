@@ -81,6 +81,64 @@ select {
   font-weight: 700;
 }
 
+.user-menu {
+  position: relative;
+}
+
+.user-pill {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  cursor: pointer;
+}
+
+.user-vats {
+  padding: .2rem .5rem;
+  border-radius: 999px;
+  background: #176b4d;
+  color: #fff;
+  font-size: .75rem;
+  font-weight: 700;
+}
+
+.user-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+
+  min-width: 180px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+
+  display: none;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0,0,0,.12);
+
+  z-index: 1000;
+}
+
+.user-menu:hover .user-dropdown {
+  display: flex;
+  flex-direction: column;
+}
+
+.user-dropdown a,
+.dropdown-logout {
+  padding: .85rem 1rem;
+  text-decoration: none;
+  color: inherit;
+  background: transparent;
+  border: 0;
+  text-align: left;
+  cursor: pointer;
+}
+
+.user-dropdown a:hover,
+.dropdown-logout:hover {
+  background: rgba(0,0,0,.05);
+}
+
 .site-header nav {
   display: flex;
   gap: 1rem;

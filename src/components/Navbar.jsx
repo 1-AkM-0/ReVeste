@@ -10,13 +10,13 @@ function Navbar() {
   const { usuario, logout } = useAuth();
   const { isDark, toggleTheme } = useTheme();
 
-  const links = [
-    { to: ROUTES.home, label: 'Inicio' },
-    { to: ROUTES.explorar, label: 'Explorar' },
-    ...(usuario ? [{ to: ROUTES.garagem, label: 'Garagem' }] : []),
-    ...(usuario ? [{ to: ROUTES.negociacoes, label: 'Negociações' }] : []),
-    { to: usuario ? ROUTES.perfil : ROUTES.login, label: usuario ? 'Perfil' : 'Login' },
-  ];
+const links = [
+  { to: ROUTES.home, label: 'Inicio' },
+  { to: ROUTES.explorar, label: 'Explorar' },
+  ...(usuario ? [{ to: ROUTES.garagem, label: 'Garagem' }] : []),
+  ...(usuario ? [{ to: ROUTES.negociacoes, label: 'Negociações' }] : []),
+  ...(!usuario ? [{ to: ROUTES.login, label: 'Login' }] : []),
+];
 
   const mobileLinks = usuario ? links : [...links, { to: ROUTES.cadastro, label: 'Cadastro' }];
 
@@ -40,17 +40,28 @@ function Navbar() {
 
         {!usuario && <NavLink to={ROUTES.cadastro}>Cadastro</NavLink>}
         {usuario && (
-          <button className="link-button" type="button" onClick={handleLogout}>
-            Sair
-          </button>
-        )}
-        {usuario && (
-          <span className="user-pill">
-            {usuario.nome}
-            <span className="user-vats">
-              {usuario.vats ?? 0} VATs
-            </span>
-          </span>
+          <div className="user-menu">
+            <button className="user-pill" type="button">
+              {usuario.nome}
+              <span className="user-vats">
+                {usuario.vats ?? 0} VATs
+              </span>
+            </button>
+
+            <div className="user-dropdown">
+              <NavLink to={ROUTES.perfil}>
+                Meu Perfil
+              </NavLink>
+
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="dropdown-logout"
+              >
+                Sair
+              </button>
+            </div>
+          </div>
         )}
         <button className="theme-toggle" type="button" onClick={toggleTheme}>
           {isDark ? 'Claro' : 'Escuro'}

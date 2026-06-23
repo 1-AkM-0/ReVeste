@@ -1,6 +1,6 @@
 import { useNegociacao } from "../context/NegociacaoContext"
 
-export default function AcoesNegociacao({id, status, onAceitar, onRecusar}) {
+export default function AcoesNegociacao({id, status, onAceitar, onRecusar, onContrapor}) {
 
   const {aceitar, recusar} = useNegociacao()
 
@@ -21,6 +21,10 @@ export default function AcoesNegociacao({id, status, onAceitar, onRecusar}) {
       <button className="btn btn-primary" onClick={() => (onAceitar ?? aceitar)(id)}>Aceitar</button>
 
       <button className="btn btn-ghost" onClick={() => (onRecusar ?? recusar)(id)}>Recusar</button>
+
+      {onContrapor && (
+        <button className="btn btn-secondary" onClick={() => onContrapor(id)}>Contrapor</button>
+      )}
     </div>
   )
 }

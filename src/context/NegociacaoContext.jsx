@@ -84,6 +84,38 @@ export function NegociacaoProvider({children}){
     )
   }
 
+  const contrapor = (id, dadosAtualizados) => {
+    const proposta = propostas.find(p => String(p.id) === String(id))
+
+    if (!proposta) {
+      return
+    }
+
+    if (proposta.status !== 'pendente') {
+      return
+    }
+
+    const novoHistorico = [
+      ...(proposta.historico || []),
+      {
+        tipo: "contraproposta",
+        data: new Date().toISOString(),
+        dados: dadosAtualizados
+      }
+    ]
+
+    atualizarProposta(
+      id, {
+        ...dadosAtualizados,
+        historico: novoHistorico
+      }
+    )
+
+    setPropostas(
+      buscarPropostas()
+    )
+  }
+
   return(
 
     <NegociacaoContext.Provider
@@ -93,7 +125,8 @@ export function NegociacaoProvider({children}){
           criar,
           aceitar,
           recusar,
-          encerrar
+          encerrar,
+          contrapor
         }
       }
     >

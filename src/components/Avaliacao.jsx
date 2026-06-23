@@ -15,7 +15,7 @@ const Avaliacao = ({ onSubmit }) => {
       <h3 className="avaliacao-titulo">Avalie a Negociação</h3>
       <form onSubmit={handleSubmit}>
         <div className="avaliacao-estrelas">
-          {[1, 2, 3, 4, 5].map((estrela) => (
+          {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((estrela) => (
             <button
               key={estrela}
               type="button"

@@ -28,12 +28,7 @@ function Login() {
       title="Entre na sua conta"
       subtitle="Acesse seu perfil, acompanhe seu saldo VATs e continue suas negociacoes."
     >
-      <div className="demo-login">
-        <strong>Login pronto para testar:</strong>
-        <span>ana@email.com</span>
-        <span>Senha: 123456</span>
-      </div>
-
+      
       <form className="form-stack" onSubmit={handleSubmit}>
         <label>
           E-mail
@@ -41,7 +36,7 @@ function Login() {
             type="email"
             value={email}
             onChange={(event) => setEmail(event.target.value)}
-            placeholder="ana@email.com"
+            placeholder="seu@email.com"
           />
         </label>
 

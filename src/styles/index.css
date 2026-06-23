@@ -301,6 +301,12 @@ main {
   font-weight: 800;
 }
 
+:root[data-theme="dark"] .floating-card {
+  border: 1px solid var(--border);
+  color: var(--text);
+  background: rgb(24 34 30 / 0.92);
+}
+
 .top-card {
   top: 1.5rem;
   left: 1.5rem;
@@ -356,9 +362,24 @@ main {
   background: var(--brand-dark);
 }
 
+:root[data-theme="dark"] .saldo-card {
+  color: var(--text);
+  background: var(--surface);
+}
+
 .saldo-card span,
 .saldo-card p {
   color: rgb(255 255 255 / 0.78);
+}
+
+:root[data-theme="dark"] .saldo-card span,
+:root[data-theme="dark"] .saldo-card p {
+  color: var(--muted);
+}
+
+:root[data-theme="dark"] .saldo-card .ghost-button {
+  color: #ffffff;
+  background: var(--brand);
 }
 
 .saldo-card strong {

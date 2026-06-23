@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Link, Navigate, useNavigate, useParams } from "react-router-dom";
 import AcoesNegociacao from "../components/AcoesNegociacao";
 import Chat from "../components/Chat";
+import PropostaTroca from "../components/PropostaTroca";
 import TimelineProposta from "../components/TimelineProposta";
 import { useAuth } from "../context/AuthContext";
 import { useNegociacao } from "../context/NegociacaoContext";
@@ -17,7 +18,9 @@ export default function Negociacoes() {
   const [anuncios, setAnuncios] = useState([]);
   const [modoContraproposta, setModoContraproposta] = useState(false);
   const [valorContraproposta, setValorContraproposta] = useState("");
-  const [vatsContraproposta, setVatsContraproposta] = useState("");
+  const [tipoContraproposta, setTipoContraproposta] = useState("venda");
+  const [dadosTrocaContraproposta, setDadosTrocaContraproposta] = useState({ itensTroca: [], vatsComplementar: 0 });
+  const [minhasPecas, setMinhasPecas] = useState([]);
 
   useEffect(() => {
     carregarAnuncios();
@@ -25,6 +28,18 @@ export default function Negociacoes() {
 
   function carregarAnuncios() {
     listAnuncios({ incluirInativos: true }).then(setAnuncios).catch(() => setAnuncios([]));
+  }
+
+  function carregarMinhasPecas() {
+    if (!usuario?.id) return;
+    listAnuncios({ incluirInativos: true }).then((todos) => {
+      const pecas = todos.filter(
+        (a) =>
+          String(a.usuarioId) === String(usuario.id) &&
+          a.status !== "excluido"
+      );
+      setMinhasPecas(pecas);
+    });
   }
 
   const anunciosPorId = useMemo(
@@ -82,7 +97,16 @@ export default function Negociacoes() {
     }
   }
 
-  function handleContrapor(propostaId) {
+  function handleContrapor() {
+    carregarMinhasPecas();
+    if (selecionada) {
+      setTipoContraproposta(selecionada.tipo === "troca" ? "troca" : "venda");
+      setValorContraproposta(String(selecionada.valorOfertado || ""));
+      setDadosTrocaContraproposta({
+        itensTroca: selecionada.itensTroca || [],
+        vatsComplementar: selecionada.vatsComplementar || 0,
+      });
+    }
     setModoContraproposta(true);
   }
 
@@ -90,17 +114,24 @@ export default function Negociacoes() {
     if (!selecionada) return;
 
     const dados = {};
-    if (valorContraproposta !== "") {
-      dados.valorOfertado = Number(valorContraproposta);
-    }
-    if (vatsContraproposta !== "") {
-      dados.vatsComplementar = Number(vatsContraproposta);
+
+    if (tipoContraproposta === "venda") {
+      if (valorContraproposta !== "") {
+        dados.valorOfertado = Number(valorContraproposta);
+      }
+      dados.tipo = "venda";
+      dados.itensTroca = [];
+      dados.vatsComplementar = 0;
+    } else {
+      dados.tipo = "troca";
+      dados.valorOfertado = 0;
+      dados.itensTroca = dadosTrocaContraproposta.itensTroca;
+      dados.vatsComplementar = Number(dadosTrocaContraproposta.vatsComplementar);
     }
 
     contrapor(selecionada.id, dados);
     setModoContraproposta(false);
     setValorContraproposta("");
-    setVatsContraproposta("");
   }
 
   function handleEncerrar(proposta) {
@@ -169,31 +200,52 @@ export default function Negociacoes() {
                   status={selecionada.status}
                   onAceitar={handleAceitar}
                   onRecusar={handleRecusar}
-                  onContrapor={handleContrapor}
+                  onContrapor={selecionada.status === "pendente" ? handleContrapor : null}
                 />
 
                 {modoContraproposta && (
                   <div style={{padding: "1rem", border: "1px solid #ddd", borderRadius: "8px", marginTop: "1rem"}}>
                     <h3>Contraproposta</h3>
-                    <div style={{display: "flex", flexDirection: "column", gap: "0.5rem"}}>
+
+                    <div style={{ display: "flex", gap: "0.75rem", marginBottom: "0.75rem" }}>
+                      <button
+                        type="button"
+                        className={`btn ${tipoContraproposta === "venda" ? "btn-primary" : "btn-ghost"}`}
+                        onClick={() => setTipoContraproposta("venda")}
+                        style={{ flex: 1 }}
+                      >
+                        Venda
+                      </button>
+                      <button
+                        type="button"
+                        className={`btn ${tipoContraproposta === "troca" ? "btn-primary" : "btn-ghost"}`}
+                        onClick={() => setTipoContraproposta("troca")}
+                        style={{ flex: 1 }}
+                      >
+                        Troca
+                      </button>
+                    </div>
+
+                    {tipoContraproposta === "venda" ? (
                       <input
                         type="number"
                         placeholder="Novo valor em VATs"
                         value={valorContraproposta}
                         onChange={e => setValorContraproposta(e.target.value)}
-                        style={{padding: "0.5rem"}}
+                        style={{padding: "0.5rem", width: "100%", boxSizing: "border-box", marginBottom: "0.5rem"}}
                       />
-                      <input
-                        type="number"
-                        placeholder="VAT complementar"
-                        value={vatsContraproposta}
-                        onChange={e => setVatsContraproposta(e.target.value)}
-                        style={{padding: "0.5rem"}}
-                      />
-                      <div style={{display: "flex", gap: "0.5rem"}}>
-                        <button className="btn btn-primary" onClick={enviarContraproposta}>Enviar</button>
-                        <button className="btn btn-ghost" onClick={() => setModoContraproposta(false)}>Cancelar</button>
+                    ) : (
+                      <div style={{ marginBottom: "0.5rem" }}>
+                        <PropostaTroca
+                          minhasPecas={minhasPecas}
+                          onChange={setDadosTrocaContraproposta}
+                        />
                       </div>
+                    )}
+
+                    <div style={{display: "flex", gap: "0.5rem"}}>
+                      <button className="btn btn-primary" onClick={enviarContraproposta}>Enviar</button>
+                      <button className="btn btn-ghost" onClick={() => setModoContraproposta(false)}>Cancelar</button>
                     </div>
                   </div>
                 )}
@@ -230,31 +282,38 @@ function NegociacaoResumo({ proposta, anuncio }) {
           Status: <strong>{statusLabel(proposta.status)}</strong>
         </p>
         <p className="detalhe-meta">
-          Tipo: <strong>{proposta.tipo === "venda" ? "Venda" : "Troca"}</strong>
+          Tipo: <strong>{proposta.tipo === "troca" ? "Troca" : "Venda"}</strong>
         </p>
       </div>
 
       <div>
-        <p className="preco-label">Oferta em VATs</p>
-        <p className="preco-valor">{formatVATs(proposta.valorOfertado)}</p>
+        {proposta.tipo === "troca" ? (
+          <>
+            {proposta.itensTroca && proposta.itensTroca.length > 0 && (
+              <div>
+                <p className="preco-label">Peças oferecidas:</p>
+                <ul style={{margin: "0.25rem 0 0 1.5rem"}}>
+                  {proposta.itensTroca.map((item, idx) => (
+                    <li key={idx}>{item.titulo}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            {proposta.vatsComplementar > 0 && (
+              <p style={{marginTop: "0.5rem", fontSize: "0.9rem", color: "#666"}}>
+                VAT complementar: {proposta.vatsComplementar}
+              </p>
+            )}
+          </>
+        ) : (
+          <>
+            <p className="preco-label">Oferta em VATs</p>
+            <p className="preco-valor">{formatVATs(proposta.valorOfertado)}</p>
+          </>
+        )}
         {anuncio?.preco ? (
           <p className="preco-neg">Referência: {formatPreco(anuncio.preco, anuncio.negociavel)}</p>
         ) : null}
-        {proposta.itensTroca && proposta.itensTroca.length > 0 && (
-          <div style={{marginTop: "0.5rem"}}>
-            <p className="preco-label">Peças oferecidas na troca:</p>
-            <ul style={{margin: "0.25rem 0 0 1.5rem"}}>
-              {proposta.itensTroca.map((item, idx) => (
-                <li key={idx}>{item.titulo}</li>
-              ))}
-            </ul>
-          </div>
-        )}
-        {proposta.vatsComplementar > 0 && (
-          <p style={{marginTop: "0.25rem", fontSize: "0.9rem", color: "#666"}}>
-            VAT complementar: {proposta.vatsComplementar}
-          </p>
-        )}
         {anuncio && (
           <Link to={anuncioPath(anuncio.id)} className="secondary-link">
             Ver anúncio

@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import AnuncioDetalhe from "../components/AnuncioDetalhe";
+import PropostaTroca from "../components/PropostaTroca";
 import { useAuth } from "../context/AuthContext";
 import { useNegociacao } from "../context/NegociacaoContext";
 import { negociacaoPath, ROUTES } from "../routes";
-import { deleteAnuncio, getAnuncio, isOwner } from "../utils/anuncios";
+import { deleteAnuncio, getAnuncio, isOwner, listAnuncios } from "../utils/anuncios";
 import { itemGaragemFromAnuncio, moverItemGaragem, sincronizarGaragemAnuncio } from "../utils/garagem";
 import { criarProposta } from "../utils/schemas";
 
@@ -19,6 +20,12 @@ export default function DetalheAnuncio() {
   const [erro, setErro] = useState(null);
   const [excluindo, setExcluindo] = useState(false);
   const [confirmar, setConfirmar] = useState(false);
+
+  const [modalProposta, setModalProposta] = useState(false);
+  const [tipoProposta, setTipoProposta] = useState("venda");
+  const [valorOfertado, setValorOfertado] = useState("");
+  const [dadosTroca, setDadosTroca] = useState({ itensTroca: [], vatsComplementar: 0 });
+  const [minhasPecas, setMinhasPecas] = useState([]);
 
   const usuarioId = usuario?.id;
   const dono = anuncio ? isOwner(anuncio, usuarioId) : false;
@@ -74,17 +81,46 @@ export default function DetalheAnuncio() {
       return;
     }
 
+    carregarMinhasPecas();
+    setValorOfertado(String(anuncio.preco || ""));
+    setTipoProposta("venda");
+    setDadosTroca({ itensTroca: [], vatsComplementar: 0 });
+    setModalProposta(true);
+  }
+
+  function carregarMinhasPecas() {
+    if (!usuario?.id) return;
+    listAnuncios({ incluirInativos: true }).then((todos) => {
+      const pecas = todos.filter(
+        (a) =>
+          String(a.usuarioId) === String(usuario.id) &&
+          String(a.id) !== String(id) &&
+          a.status !== "excluido"
+      );
+      setMinhasPecas(pecas);
+    });
+  }
+
+  function confirmarProposta() {
+    if (tipoProposta === "troca" && dadosTroca.itensTroca.length === 0) {
+      alert("Selecione pelo menos 1 peça para a troca.");
+      return;
+    }
+
     const proposta = criarProposta({
       anuncioId: anuncio.id,
       compradorId: usuario.id,
       vendedorId: anuncio.usuarioId,
-      tipo: anuncio.categoria === "servico" ? "servico" : "venda",
-      valorOfertado: Number(anuncio.preco || 0),
+      tipo: tipoProposta,
+      valorOfertado: tipoProposta === "venda" ? Number(valorOfertado) : 0,
+      itensTroca: tipoProposta === "troca" ? dadosTroca.itensTroca : [],
+      vatsComplementar: tipoProposta === "troca" ? Number(dadosTroca.vatsComplementar) : 0,
     });
 
     criar(proposta);
     sincronizarGaragemAnuncio(anuncio, "negociacao");
     moverItemGaragem(usuario.id, itemGaragemFromAnuncio(anuncio), "negociacao");
+    setModalProposta(false);
     navigate(negociacaoPath(proposta.id));
   }
 
@@ -160,6 +196,77 @@ export default function DetalheAnuncio() {
                 className="btn btn-danger"
               >
                 {excluindo ? "Excluindo..." : "Sim, excluir"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {modalProposta && (
+        <div className="modal-overlay">
+          <div className="modal-box" style={{ maxWidth: "500px" }}>
+            <h2 className="modal-title">Nova Proposta</h2>
+            <p className="modal-desc">Escolha o tipo de negociação para <strong>{anuncio.titulo}</strong></p>
+
+            <div style={{ display: "flex", gap: "0.75rem", marginBottom: "1rem" }}>
+              <button
+                type="button"
+                className={`btn ${tipoProposta === "venda" ? "btn-primary" : "btn-ghost"}`}
+                onClick={() => setTipoProposta("venda")}
+                style={{ flex: 1 }}
+              >
+                Venda
+              </button>
+              <button
+                type="button"
+                className={`btn ${tipoProposta === "troca" ? "btn-primary" : "btn-ghost"}`}
+                onClick={() => setTipoProposta("troca")}
+                style={{ flex: 1 }}
+              >
+                Troca
+              </button>
+            </div>
+
+            {tipoProposta === "venda" ? (
+              <div style={{ marginBottom: "1rem" }}>
+                <label className="field-label">Valor oferecido (VATs)</label>
+                <input
+                  type="number"
+                  value={valorOfertado}
+                  onChange={(e) => setValorOfertado(e.target.value)}
+                  placeholder="Valor em VATs"
+                  min={0}
+                  className="input"
+                />
+                {anuncio.preco > 0 && (
+                  <p style={{ fontSize: "0.85rem", color: "#666", marginTop: "0.25rem" }}>
+                    Valor anunciado: {anuncio.preco} VATs
+                  </p>
+                )}
+              </div>
+            ) : (
+              <div style={{ marginBottom: "1rem" }}>
+                <PropostaTroca
+                  minhasPecas={minhasPecas}
+                  onChange={setDadosTroca}
+                />
+              </div>
+            )}
+
+            <div className="modal-actions">
+              <button
+                type="button"
+                className="btn btn-ghost"
+                onClick={() => setModalProposta(false)}
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                className="btn btn-primary"
+                onClick={confirmarProposta}
+              >
+                Enviar Proposta
               </button>
             </div>
           </div>

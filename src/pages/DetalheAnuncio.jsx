@@ -20,7 +20,6 @@ export default function DetalheAnuncio() {
 
   useEffect(() => {
     if (!id) return;
-
     setLoading(true);
     setErro(null);
 
@@ -53,13 +52,13 @@ export default function DetalheAnuncio() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="flex flex-col items-center gap-3 text-gray-400">
-          <svg className="w-6 h-6 animate-spin" fill="none" viewBox="0 0 24 24">
-            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+      <div className="page-centered">
+        <div className="spinner-wrap">
+          <svg className="spinner" fill="none" viewBox="0 0 24 24" aria-hidden="true">
+            <circle style={{ opacity: 0.25 }} cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+            <path style={{ opacity: 0.75 }} fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
           </svg>
-          <span className="text-sm">Carregando anúncio...</span>
+          <span className="spinner-text">Carregando anúncio...</span>
         </div>
       </div>
     );
@@ -67,25 +66,20 @@ export default function DetalheAnuncio() {
 
   if (erro || !anuncio) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
-        <div className="text-center">
-          <p className="text-gray-500 mb-4">{erro ?? "Anúncio não encontrado."}</p>
-          <Link to="/explorar" className="text-sm text-gray-700 underline underline-offset-2 hover:text-gray-900">
-            Voltar para Explorar
-          </Link>
+      <div className="page-centered">
+        <div className="error-box">
+          <p>{erro ?? "Anúncio não encontrado."}</p>
+          <Link to="/explorar">Voltar para Explorar</Link>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-4xl mx-auto px-4 py-8">
-        <Link
-          to="/explorar"
-          className="inline-flex items-center gap-1.5 text-sm text-gray-400 hover:text-gray-700 mb-6 transition-colors"
-        >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+    <div className="page">
+      <div className="container">
+        <Link to="/explorar" className="back-link">
+          <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24" aria-hidden="true">
             <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
           </svg>
           Explorar
@@ -100,25 +94,23 @@ export default function DetalheAnuncio() {
       </div>
 
       {confirmar && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 px-4">
-          <div className="bg-white rounded-2xl p-6 max-w-sm w-full shadow-xl">
-            <div className="w-12 h-12 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4">
-              <svg className="w-6 h-6 text-red-500" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+        <div className="modal-overlay">
+          <div className="modal-box">
+            <div className="modal-icon">
+              <svg width="24" height="24" fill="none" stroke="#ef4444" strokeWidth={1.5} viewBox="0 0 24 24" aria-hidden="true">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
               </svg>
             </div>
-            <h2 className="text-base font-semibold text-gray-900 text-center mb-1">
-              Excluir anúncio?
-            </h2>
-            <p className="text-sm text-gray-500 text-center mb-5">
+            <h2 className="modal-title">Excluir anúncio?</h2>
+            <p className="modal-desc">
               Essa ação não pode ser desfeita. O anúncio será removido permanentemente.
             </p>
-            <div className="flex gap-2">
+            <div className="modal-actions">
               <button
                 type="button"
                 onClick={() => setConfirmar(false)}
                 disabled={excluindo}
-                className="flex-1 py-2.5 text-sm border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors text-gray-700 disabled:opacity-50"
+                className="btn btn-ghost"
               >
                 Cancelar
               </button>
@@ -126,7 +118,7 @@ export default function DetalheAnuncio() {
                 type="button"
                 onClick={handleExcluir}
                 disabled={excluindo}
-                className="flex-1 py-2.5 text-sm bg-red-500 hover:bg-red-600 text-white rounded-xl transition-colors font-medium disabled:opacity-50"
+                className="btn btn-danger"
               >
                 {excluindo ? "Excluindo..." : "Sim, excluir"}
               </button>

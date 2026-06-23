@@ -6,9 +6,9 @@ const CATEGORIAS = [
 ];
 
 const TAMANHOS = [
-  { value: "pequeno", label: "Pequeno"  },
-  { value: "medio",   label: "Médio"    },
-  { value: "grande",  label: "Grande"   },
+  { value: "pequeno", label: "Pequeno" },
+  { value: "medio",   label: "Médio"   },
+  { value: "grande",  label: "Grande"  },
 ];
 
 const MODALIDADES = [
@@ -23,15 +23,15 @@ const VATS = [
 ];
 
 const ORDENS = [
-  { value: "recente",     label: "Mais recentes"  },
-  { value: "menor_preco", label: "Menor preço"    },
-  { value: "maior_preco", label: "Maior preço"    },
+  { value: "recente",     label: "Mais recentes" },
+  { value: "menor_preco", label: "Menor preço"   },
+  { value: "maior_preco", label: "Maior preço"   },
 ];
 
 function GrupoFiltro({ titulo, children }) {
   return (
-    <div>
-      <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">{titulo}</p>
+    <div className="filtro-grupo">
+      <p>{titulo}</p>
       {children}
     </div>
   );
@@ -39,7 +39,7 @@ function GrupoFiltro({ titulo, children }) {
 
 function Chips({ opcoes, valor, onChange }) {
   return (
-    <div className="flex flex-wrap gap-1.5">
+    <div className="chips">
       {opcoes.map((op) => {
         const ativo = valor === op.value;
         return (
@@ -48,12 +48,7 @@ function Chips({ opcoes, valor, onChange }) {
             type="button"
             onClick={() => onChange(ativo ? "" : op.value)}
             aria-pressed={ativo}
-            className={[
-              "px-3 py-1 text-xs rounded-full border transition-all",
-              ativo
-                ? "bg-gray-900 text-white border-gray-900"
-                : "bg-white text-gray-600 border-gray-200 hover:border-gray-400",
-            ].join(" ")}
+            className="chip"
           >
             {op.label}
           </button>
@@ -72,41 +67,30 @@ export default function FiltrosAnuncios({
   layout = "lateral",
 }) {
   const isLateral = layout === "lateral";
-
   const mostrarModalidade = !filtros.categoria || filtros.categoria === "servico";
   const mostrarTamanho    = !filtros.categoria || ["aluguel", "venda", "produto"].includes(filtros.categoria);
 
   return (
     <aside
       aria-label="Filtros"
-      className={[
-        isLateral
-          ? "bg-white border border-gray-100 rounded-2xl p-5 space-y-5 self-start sticky top-4"
-          : "bg-white border border-gray-100 rounded-2xl p-4",
-      ].join(" ")}
+      className={`filtros-aside${isLateral ? " lateral" : ""}`}
     >
-
-      <div className="flex items-center justify-between">
-        <span className="text-sm font-semibold text-gray-800 flex items-center gap-2">
+      <div className="filtros-header">
+        <span className="filtros-title">
           Filtros
           {temFiltrosAtivos && (
-            <span className="inline-flex items-center justify-center w-5 h-5 text-xs bg-gray-900 text-white rounded-full">
-              {quantidadeFiltrosAtivos}
-            </span>
+            <span className="filtros-count">{quantidadeFiltrosAtivos}</span>
           )}
         </span>
+
         {temFiltrosAtivos && (
-          <button
-            type="button"
-            onClick={limpar}
-            className="text-xs text-gray-400 hover:text-gray-700 transition-colors underline underline-offset-2"
-          >
+          <button type="button" onClick={limpar} className="filtros-limpar">
             Limpar tudo
           </button>
         )}
       </div>
 
-      <div className={isLateral ? "space-y-5" : "flex flex-wrap gap-6"}>
+      <div className={isLateral ? "filtros-body-lateral" : "filtros-body-inline"}>
         <GrupoFiltro titulo="Categoria">
           <Chips
             opcoes={CATEGORIAS}
@@ -151,7 +135,7 @@ export default function FiltrosAnuncios({
           <select
             value={filtros.ordem}
             onChange={(e) => setFiltro("ordem", e.target.value)}
-            className="w-full px-3 py-1.5 text-sm border border-gray-200 rounded-lg outline-none focus:border-gray-400 focus:ring-2 focus:ring-gray-100 bg-white"
+            className="select-ordem"
             disabled={!!filtros.busca}
             title={filtros.busca ? "Ordenação desativada durante busca por texto (usa relevância)" : ""}
           >
@@ -160,7 +144,7 @@ export default function FiltrosAnuncios({
             ))}
           </select>
           {filtros.busca && (
-            <p className="text-xs text-gray-400 mt-1">Ordenando por relevância da busca.</p>
+            <p className="field-hint">Ordenando por relevância da busca.</p>
           )}
         </GrupoFiltro>
       </div>

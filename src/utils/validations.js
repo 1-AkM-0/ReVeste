@@ -1,6 +1,15 @@
 const REQUIRED_MESSAGE = "Campo obrigatório.";
 
-export const CATEGORIAS_ANUNCIO = Object.freeze(["aluguel", "venda", "produto", "servico"]);
+export const CATEGORIAS_ANUNCIO = Object.freeze([
+  "camiseta",
+  "calca",
+  "vestido",
+  "saia",
+  "shorts",
+  "jaqueta",
+  "calcado",
+  "acessorio",
+]);
 
 export const ESTADOS_BR = Object.freeze([
   "AC",
@@ -74,6 +83,7 @@ export function sanitizeAnuncioForm(form = {}) {
 
   return {
     titulo: String(form.titulo ?? "").trim(),
+    marca: String(form.marca ?? "").trim(),
     categoria: String(form.categoria ?? "").trim(),
     descricao: String(form.descricao ?? "").trim(),
     preco: isBlank(form.preco) ? "" : Number(form.preco),
@@ -82,8 +92,7 @@ export function sanitizeAnuncioForm(form = {}) {
     cidade: String(form.cidade ?? "").trim(),
     estado: String(form.estado ?? "").trim().toUpperCase(),
     tamanho: String(form.tamanho ?? "").trim(),
-    modalidade: String(form.modalidade ?? "").trim(),
-    vat: Boolean(form.vat),
+    etiquetaOriginal: Boolean(form.etiquetaOriginal),
     imagens,
   };
 }
@@ -98,12 +107,19 @@ export function validateAnuncioForm(form = {}) {
     errors.titulo = "Use até 100 caracteres.";
   }
 
+  if (isBlank(sanitized.marca)) {
+    errors.marca = "Informe a marca da peça.";
+  }
+
   if (isBlank(sanitized.categoria)) {
     errors.categoria = "Selecione uma categoria.";
   } else if (!CATEGORIAS_ANUNCIO.includes(sanitized.categoria)) {
     errors.categoria = "Categoria inválida.";
   }
 
+  if (isBlank(sanitized.tamanho)) {
+    errors.tamanho = "Selecione o tamanho.";
+  }
   if (isBlank(sanitized.descricao)) {
     errors.descricao = "Descreva o anúncio.";
   } else if (sanitized.descricao.length > 1500) {

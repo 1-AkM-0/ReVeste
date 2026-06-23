@@ -245,17 +245,6 @@ export default function Negociacoes() {
                   onContrapor={selecionada.status === "pendente" ? handleContrapor : null}
                 />
 
-                {selecionada.status === "aceita" && !jaAvaliou(selecionada) && (
-                  <div className="card card-body" style={{ marginTop: "1rem" }}>
-                    <Avaliacao
-                      onSubmit={(dados) => {
-                        setAvaliacaoDestinoId(getOutroParticipanteId(selecionada));
-                        handleAvaliar(dados);
-                      }}
-                    />
-                  </div>
-                )}
-
                 {modoContraproposta && (
                   <div style={{padding: "1rem", border: "1px solid #ddd", borderRadius: "8px", marginTop: "1rem"}}>
                     <h3>Contraproposta</h3>

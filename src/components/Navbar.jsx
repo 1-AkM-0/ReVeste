@@ -13,7 +13,7 @@ function Navbar() {
   const links = [
     { to: ROUTES.home, label: 'Inicio' },
     { to: ROUTES.explorar, label: 'Explorar' },
-    { to: ROUTES.garagem, label: 'Garagem' },
+    ...(usuario ? [{ to: ROUTES.garagem, label: 'Garagem' }] : []),
     { to: usuario ? ROUTES.perfil : ROUTES.login, label: usuario ? 'Perfil' : 'Login' },
   ];
 

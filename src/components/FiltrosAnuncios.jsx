@@ -16,22 +16,16 @@ const TAMANHOS = [
   { value: "xgg", label: "XGG" },
 ];
 
-const GENEROS = [
-  { value: "masculino", label: "Masculino"  },
-  { value: "feminino",  label: "Feminino"   },
-  { value: "unissex",   label: "Unissex"    },
-  { value: "infantil",  label: "Infantil"   },
-];
-
-const VATS = [
-  { value: "com_vat", label: "Com nota fiscal" },
-  { value: "sem_vat", label: "Sem nota fiscal" },
+const MODALIDADES = [
+  { value: "venda", label: "Venda" },
+  { value: "troca", label: "Troca" },
+  { value: "ambos", label: "Ambos" },
 ];
 
 const ORDENS = [
   { value: "recente",     label: "Mais recentes" },
-  { value: "menor_preco", label: "Menor preço"   },
-  { value: "maior_preco", label: "Maior preço"   },
+  { value: "menor_preco", label: "Menor valor"   },
+  { value: "maior_preco", label: "Maior valor"   },
 ];
 
 function GrupoFiltro({ titulo, children }) {
@@ -111,20 +105,35 @@ export default function FiltrosAnuncios({
           />
         </GrupoFiltro>
 
-        <GrupoFiltro titulo="Gênero">
+        <GrupoFiltro titulo="Modalidade">
           <Chips
-            opcoes={GENEROS}
-            valor={filtros.genero}
-            onChange={(v) => setFiltro("genero", v)}
+            opcoes={MODALIDADES}
+            valor={filtros.modalidade}
+            onChange={(v) => setFiltro("modalidade", v)}
           />
         </GrupoFiltro>
 
-        <GrupoFiltro titulo="Nota fiscal (VAT)">
-          <Chips
-            opcoes={VATS}
-            valor={filtros.vat}
-            onChange={(v) => setFiltro("vat", v)}
-          />
+        <GrupoFiltro titulo="Faixa de VATs">
+          <div style={{ display: "flex", gap: "0.5rem" }}>
+            <input
+              type="number"
+              placeholder="Min"
+              min={0}
+              value={filtros.vatMin}
+              onChange={(e) => setFiltro("vatMin", e.target.value)}
+              className="input"
+              style={{ width: "50%" }}
+            />
+            <input
+              type="number"
+              placeholder="Max"
+              min={0}
+              value={filtros.vatMax}
+              onChange={(e) => setFiltro("vatMax", e.target.value)}
+              className="input"
+              style={{ width: "50%" }}
+            />
+          </div>
         </GrupoFiltro>
 
         <GrupoFiltro titulo="Ordenar por">

@@ -7,6 +7,7 @@ import {
   salvarGaragem,
   sincronizarGaragemAnuncio,
 } from '../utils/garagem';
+import { atualizarProposta, buscarPropostas } from '../utils/propostas';
 
 export const useGaragem = (usuarioLogadoId) => {
   const [garagem, setGaragem] = useState({
@@ -42,6 +43,20 @@ export const useGaragem = (usuarioLogadoId) => {
       },
       listaDestino
     );
+
+    if (listaOrigem === "negociacao") {
+      const propostas = buscarPropostas();
+      const proposta = propostas.find(
+        (p) => String(p.anuncioId) === String(itemId) && p.status === "pendente"
+      );
+      if (proposta) {
+        if (listaDestino === "concluido") {
+          atualizarProposta(proposta.id, { status: "aceita" });
+        } else if (listaDestino === "disponivel") {
+          atualizarProposta(proposta.id, { status: "encerrada" });
+        }
+      }
+    }
   };
 
   return { garagem, moverItem };

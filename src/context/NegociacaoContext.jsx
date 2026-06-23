@@ -116,6 +116,10 @@ export function NegociacaoProvider({children}){
     )
   }
 
+  const refresh = () => {
+    setPropostas(buscarPropostas())
+  }
+
   return(
 
     <NegociacaoContext.Provider
@@ -126,7 +130,8 @@ export function NegociacaoProvider({children}){
           aceitar,
           recusar,
           encerrar,
-          contrapor
+          contrapor,
+          refresh,
         }
       }
     >

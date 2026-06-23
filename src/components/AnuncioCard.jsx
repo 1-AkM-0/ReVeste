@@ -44,16 +44,34 @@ export default function AnuncioCard({ anuncio, onClick }) {
           {anuncio.cidade}, {anuncio.estado}
         </p>
 
-        <p className="card-price">{formatPreco(anuncio.preco, anuncio.negociavel)}</p>
+        <p className="card-price">
+          {anuncio.valorVATs ? `${anuncio.valorVATs} VATs` : formatPreco(anuncio.preco, anuncio.negociavel)}
+        </p>
+        {anuncio.modalidade && (
+          <span style={{ fontSize: "0.75rem", color: "#9ca3af" }}>
+            {labelModalidade(anuncio.modalidade)}
+          </span>
+        )}
       </div>
     </article>
   );
 }
 
-// Mapeia categoria para cores sem depender de Tailwind
+function labelModalidade(val) {
+  return { venda: "Venda", troca: "Troca", ambos: "Venda e Troca" }[val] ?? val;
+}
+
 function badgeBg(cat) {
-  return { aluguel: "#eff6ff", venda: "#f0fdf4", produto: "#fffbeb", servico: "#faf5ff" }[cat] ?? "#f3f4f6";
+  return {
+    camiseta: "#eff6ff", calca: "#f0fdf4", vestido: "#faf5ff",
+    saia: "#fdf4ff", shorts: "#fff1f2", jaqueta: "#eef2ff",
+    calcado: "#f0fdfa", acessorio: "#fff7ed",
+  }[cat] ?? "#f3f4f6";
 }
 function badgeText(cat) {
-  return { aluguel: "#1d4ed8", venda: "#15803d", produto: "#b45309", servico: "#7e22ce" }[cat] ?? "#374151";
+  return {
+    camiseta: "#1d4ed8", calca: "#15803d", vestido: "#7e22ce",
+    saia: "#a21caf", shorts: "#be123c", jaqueta: "#4338ca",
+    calcado: "#0f766e", acessorio: "#c2410c",
+  }[cat] ?? "#374151";
 }

@@ -107,10 +107,13 @@ export default function AnuncioDetalhe({ anuncio, isOwner, onEditar, onExcluir, 
 
         <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
           <div className="card card-body">
-            <p className="preco-label">Preço</p>
-            <p className="preco-valor">{formatPreco(anuncio.preco, anuncio.negociavel)}</p>
-            {anuncio.negociavel && anuncio.preco && (
-              <p className="preco-neg">Valor negociável</p>
+            <p className="preco-label">Valor em VATs</p>
+            <p className="preco-valor">{anuncio.valorVATs ? `${anuncio.valorVATs} VATs` : formatPreco(anuncio.preco, anuncio.negociavel)}</p>
+            {anuncio.modalidade && (
+              <p className="preco-neg">Modalidade: {labelModalidade(anuncio.modalidade)}</p>
+            )}
+            {anuncio.estadoConservacao && (
+              <p className="preco-neg">Estado: {labelEstado(anuncio.estadoConservacao)}</p>
             )}
           </div>
 
@@ -143,9 +146,24 @@ export default function AnuncioDetalhe({ anuncio, isOwner, onEditar, onExcluir, 
   );
 }
 
+function labelModalidade(val) {
+  return { venda: "Venda", troca: "Troca", ambos: "Venda e Troca" }[val] ?? val;
+}
+function labelEstado(val) {
+  return { novo: "Novo", bom: "Bom", regular: "Regular", marcas_de_uso: "Marcas de uso" }[val] ?? val;
+}
+
 function catBg(cat) {
-  return { aluguel: "#eff6ff", venda: "#f0fdf4", produto: "#fffbeb", servico: "#faf5ff" }[cat] ?? "#f3f4f6";
+  return {
+    camiseta: "#eff6ff", calca: "#f0fdf4", vestido: "#faf5ff",
+    saia: "#fdf4ff", shorts: "#fff1f2", jaqueta: "#eef2ff",
+    calcado: "#f0fdfa", acessorio: "#fff7ed",
+  }[cat] ?? "#f3f4f6";
 }
 function catText(cat) {
-  return { aluguel: "#1d4ed8", venda: "#15803d", produto: "#b45309", servico: "#7e22ce" }[cat] ?? "#374151";
+  return {
+    camiseta: "#1d4ed8", calca: "#15803d", vestido: "#7e22ce",
+    saia: "#a21caf", shorts: "#be123c", jaqueta: "#4338ca",
+    calcado: "#0f766e", acessorio: "#c2410c",
+  }[cat] ?? "#374151";
 }

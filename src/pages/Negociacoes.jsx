@@ -1,30 +1,35 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, Navigate, useNavigate, useParams } from "react-router-dom";
 import AcoesNegociacao from "../components/AcoesNegociacao";
+import Avaliacao from "../components/Avaliacao";
 import Chat from "../components/Chat";
 import PropostaTroca from "../components/PropostaTroca";
 import TimelineProposta from "../components/TimelineProposta";
 import { useAuth } from "../context/AuthContext";
 import { useNegociacao } from "../context/NegociacaoContext";
 import { anuncioPath, negociacaoPath, ROUTES } from "../routes";
-import { formatPreco, listAnuncios } from "../utils/anuncios";
+import { listAnuncios } from "../utils/anuncios";
 import { itemGaragemFromAnuncio, moverItemGaragem, removerItemGaragem, sincronizarGaragemAnuncio } from "../utils/garagem";
+import { saoEquivalentes, sugerirComplemento } from "../utils/vats";
 
 export default function Negociacoes() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { usuario, transferirVATs } = useAuth();
-  const { propostas, aceitar, recusar, encerrar, contrapor } = useNegociacao();
+  const { propostas, aceitar, recusar, encerrar, contrapor, refresh } = useNegociacao();
   const [anuncios, setAnuncios] = useState([]);
   const [modoContraproposta, setModoContraproposta] = useState(false);
   const [valorContraproposta, setValorContraproposta] = useState("");
   const [tipoContraproposta, setTipoContraproposta] = useState("venda");
   const [dadosTrocaContraproposta, setDadosTrocaContraproposta] = useState({ itensTroca: [], vatsComplementar: 0 });
   const [minhasPecas, setMinhasPecas] = useState([]);
+  const [mostrarAvaliacao, setMostrarAvaliacao] = useState(false);
+  const [avaliacaoDestinoId, setAvaliacaoDestinoId] = useState(null);
 
   useEffect(() => {
+    refresh();
     carregarAnuncios();
-  }, []);
+  }, [id]);
 
   function carregarAnuncios() {
     listAnuncios({ incluirInativos: true }).then(setAnuncios).catch(() => setAnuncios([]));
@@ -65,6 +70,16 @@ export default function Negociacoes() {
     navigate(negociacaoPath(propostaId));
   }
 
+  function getOutroParticipanteId(proposta) {
+    return String(usuario.id) === String(proposta.compradorId)
+      ? proposta.vendedorId
+      : proposta.compradorId;
+  }
+
+  function jaAvaliou(proposta) {
+    return localStorage.getItem(`reveste_avaliacao_negociacao_${proposta.id}_${usuario.id}`) === "true";
+  }
+
   function handleAceitar(propostaId) {
     const proposta = propostas.find((item) => String(item.id) === String(propostaId));
     const anuncio = proposta ? anunciosPorId.get(String(proposta.anuncioId)) : null;
@@ -82,6 +97,33 @@ export default function Negociacoes() {
     sincronizarGaragemAnuncio(anuncio, "concluido");
     moverItemGaragem(proposta.compradorId, itemGaragemFromAnuncio(anuncio), "concluido");
     carregarAnuncios();
+
+    setAvaliacaoDestinoId(getOutroParticipanteId(proposta));
+    setMostrarAvaliacao(true);
+  }
+
+  function handleAvaliar(dados) {
+    if (!avaliacaoDestinoId || !usuario || !selecionada) return;
+
+    const avaliacoesExistentes = JSON.parse(localStorage.getItem(`reveste_avaliacoes_${avaliacaoDestinoId}`) || "[]");
+    const novaAvaliacao = {
+      id: Date.now().toString(),
+      avaliadorId: usuario.id,
+      nota: dados.nota,
+      comentario: dados.comentario,
+      data: new Date().toISOString(),
+    };
+
+    localStorage.setItem(
+      `reveste_avaliacoes_${avaliacaoDestinoId}`,
+      JSON.stringify([...avaliacoesExistentes, novaAvaliacao])
+    );
+
+    localStorage.setItem(`reveste_avaliacao_negociacao_${selecionada.id}_${usuario.id}`, "true");
+
+    setMostrarAvaliacao(false);
+    setAvaliacaoDestinoId(null);
+    alert("Avaliação registrada com sucesso!");
   }
 
   function handleRecusar(propostaId) {
@@ -203,6 +245,17 @@ export default function Negociacoes() {
                   onContrapor={selecionada.status === "pendente" ? handleContrapor : null}
                 />
 
+                {selecionada.status === "aceita" && !jaAvaliou(selecionada) && (
+                  <div className="card card-body" style={{ marginTop: "1rem" }}>
+                    <Avaliacao
+                      onSubmit={(dados) => {
+                        setAvaliacaoDestinoId(getOutroParticipanteId(selecionada));
+                        handleAvaliar(dados);
+                      }}
+                    />
+                  </div>
+                )}
+
                 {modoContraproposta && (
                   <div style={{padding: "1rem", border: "1px solid #ddd", borderRadius: "8px", marginTop: "1rem"}}>
                     <h3>Contraproposta</h3>
@@ -262,12 +315,30 @@ export default function Negociacoes() {
                   usuarioAtualId={usuario.id}
                   canEncerrar={selecionada.status === "pendente"}
                   onEncerrar={() => handleEncerrar(selecionada)}
+                  dataEncerramento={selecionada.status !== "pendente" ? selecionada.atualizadoEm : null}
                 />
               </div>
             )}
           </div>
         )}
       </div>
+
+      {mostrarAvaliacao && (
+        <div className="modal-overlay">
+          <div className="modal-box" style={{ maxWidth: "480px" }}>
+            <Avaliacao onSubmit={handleAvaliar} />
+            <div style={{ marginTop: "0.75rem", textAlign: "center" }}>
+              <button
+                type="button"
+                className="btn btn-ghost"
+                onClick={() => setMostrarAvaliacao(false)}
+              >
+                Pular avaliação
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 }
@@ -304,6 +375,13 @@ function NegociacaoResumo({ proposta, anuncio }) {
                 VAT complementar: {proposta.vatsComplementar}
               </p>
             )}
+            {anuncio && proposta.itensTroca && proposta.itensTroca.length > 0 && (
+              <VATEquivalencia
+                valorAnuncio={Number(anuncio.valorVATs || anuncio.preco || 0)}
+                itensOfertados={proposta.itensTroca}
+                vatsComplementar={Number(proposta.vatsComplementar)}
+              />
+            )}
           </>
         ) : (
           <>
@@ -311,8 +389,8 @@ function NegociacaoResumo({ proposta, anuncio }) {
             <p className="preco-valor">{formatVATs(proposta.valorOfertado)}</p>
           </>
         )}
-        {anuncio?.preco ? (
-          <p className="preco-neg">Referência: {formatPreco(anuncio.preco, anuncio.negociavel)}</p>
+        {(anuncio?.valorVATs || anuncio?.preco) ? (
+          <p className="preco-neg">Referência: {anuncio.valorVATs || anuncio.preco} VATs</p>
         ) : null}
         {anuncio && (
           <Link to={anuncioPath(anuncio.id)} className="secondary-link">
@@ -321,6 +399,25 @@ function NegociacaoResumo({ proposta, anuncio }) {
         )}
       </div>
     </div>
+  );
+}
+
+function VATEquivalencia({ valorAnuncio, itensOfertados, vatsComplementar }) {
+  if (valorAnuncio <= 0 || !itensOfertados?.length) return null;
+
+  const totalItens = itensOfertados.reduce((sum, item) => sum + Number(item.valorVATs || item.preco || 0), 0);
+  const totalOferta = totalItens + vatsComplementar;
+
+  if (totalOferta <= 0) return null;
+  if (saoEquivalentes(valorAnuncio, totalOferta)) {
+    return <p className="preco-neg" style={{ color: "#15803d" }}>Valores equivalentes (diferença até 20%).</p>;
+  }
+
+  const sugestao = sugerirComplemento(valorAnuncio, totalOferta);
+  return (
+    <p className="preco-neg" style={{ color: "#b45309" }}>
+      Diferença maior que 20%.{sugestao > 0 ? ` Sugestão: adicione ${sugestao} VATs complementares.` : ""}
+    </p>
   );
 }
 

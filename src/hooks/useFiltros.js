@@ -6,8 +6,9 @@ export const FILTROS_PADRAO = {
   busca: "",
   categoria: "",
   tamanho: "",
-  genero: "",
-  vat: "",
+  modalidade: "",
+  vatMin: "",
+  vatMax: "",
   ordem: "recente",
 };
 
@@ -35,14 +36,24 @@ export function aplicarFiltros(anuncios = [], filtros = FILTROS_PADRAO) {
     lista = lista.filter((anuncio) => anuncio.tamanho === filtrosAtuais.tamanho);
   }
 
-  if (filtrosAtuais.genero) {
-    lista = lista.filter((anuncio) => anuncio.genero === filtrosAtuais.genero);
+  if (filtrosAtuais.modalidade) {
+    lista = lista.filter(
+      (anuncio) => anuncio.modalidade === filtrosAtuais.modalidade || anuncio.modalidade === "ambos"
+    );
   }
 
-  if (filtrosAtuais.vat === "com_vat") {
-    lista = lista.filter((anuncio) => anuncio.vat === true);
-  } else if (filtrosAtuais.vat === "sem_vat") {
-    lista = lista.filter((anuncio) => anuncio.vat !== true);
+  if (filtrosAtuais.vatMin) {
+    const min = Number(filtrosAtuais.vatMin);
+    if (Number.isFinite(min)) {
+      lista = lista.filter((anuncio) => Number(anuncio.valorVATs || anuncio.preco || 0) >= min);
+    }
+  }
+
+  if (filtrosAtuais.vatMax) {
+    const max = Number(filtrosAtuais.vatMax);
+    if (Number.isFinite(max)) {
+      lista = lista.filter((anuncio) => Number(anuncio.valorVATs || anuncio.preco || 0) <= max);
+    }
   }
 
   if (filtrosAtuais.busca.trim()) {
@@ -89,8 +100,9 @@ export function useFiltros(anuncios = []) {
       filtros.busca,
       filtros.categoria,
       filtros.tamanho,
-      filtros.genero,
-      filtros.vat,
+      filtros.modalidade,
+      filtros.vatMin,
+      filtros.vatMax,
     ].filter(Boolean).length;
   }, [filtros]);
 

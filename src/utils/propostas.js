@@ -19,7 +19,7 @@ export function atualizarProposta(id,dados){
     const lista=buscarPropostas()
 
     const novaLista=lista.map(p=>
-        p.id===id ? {...p,...dados} : p
+        p.id===id ? {...p,...dados, atualizadoEm: new Date().toISOString()} : p
     )
 
     localStorage.setItem(

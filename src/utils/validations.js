@@ -73,6 +73,9 @@ export function normalizePhotoUrls(imagens = []) {
     .slice(0, 5);
 }
 
+const MODALIDADES_VALIDAS = ["venda", "troca", "ambos"];
+const ESTADOS_CONSERVACAO_VALIDOS = ["novo", "bom", "regular", "marcas_de_uso"];
+
 export function sanitizeAnuncioForm(form = {}) {
   const imagens = normalizePhotoUrls(form.imagens);
   const fotoUrl = String(form.fotoUrl ?? "").trim();
@@ -86,6 +89,9 @@ export function sanitizeAnuncioForm(form = {}) {
     marca: String(form.marca ?? "").trim(),
     categoria: String(form.categoria ?? "").trim(),
     descricao: String(form.descricao ?? "").trim(),
+    valorVATs: isBlank(form.valorVATs) ? "" : Math.max(1, Number(form.valorVATs)),
+    modalidade: MODALIDADES_VALIDAS.includes(form.modalidade) ? form.modalidade : "",
+    estadoConservacao: ESTADOS_CONSERVACAO_VALIDOS.includes(form.estadoConservacao) ? form.estadoConservacao : "",
     preco: isBlank(form.preco) ? "" : Number(form.preco),
     negociavel: Boolean(form.negociavel),
     contato: String(form.contato ?? "").trim(),
@@ -126,8 +132,16 @@ export function validateAnuncioForm(form = {}) {
     errors.descricao = "Use até 1500 caracteres.";
   }
 
-  if (!isBlank(form.preco) && (!Number.isFinite(sanitized.preco) || sanitized.preco < 0)) {
-    errors.preco = "Informe um preço válido.";
+  if (isBlank(sanitized.modalidade)) {
+    errors.modalidade = "Selecione a modalidade.";
+  }
+
+  if (isBlank(sanitized.estadoConservacao)) {
+    errors.estadoConservacao = "Selecione o estado de conservação.";
+  }
+
+  if (isBlank(sanitized.valorVATs) || !Number.isFinite(sanitized.valorVATs) || sanitized.valorVATs <= 0) {
+    errors.valorVATs = "Informe um valor em VATs maior que 0.";
   }
 
   if (isBlank(sanitized.contato)) {

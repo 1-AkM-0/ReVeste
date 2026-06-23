@@ -8,6 +8,7 @@ import { negociacaoPath, ROUTES } from "../routes";
 import { deleteAnuncio, getAnuncio, isOwner, listAnuncios } from "../utils/anuncios";
 import { itemGaragemFromAnuncio, moverItemGaragem, sincronizarGaragemAnuncio } from "../utils/garagem";
 import { criarProposta } from "../utils/schemas";
+import { saoEquivalentes, sugerirComplemento } from "../utils/vats";
 
 export default function DetalheAnuncio() {
   const { id } = useParams();
@@ -111,6 +112,15 @@ export default function DetalheAnuncio() {
       alert("Você não pode negociar com seu próprio anúncio.");
       setModalProposta(false);
       return;
+    }
+
+    if (tipoProposta === "venda") {
+      const valorAnunciado = Number(anuncio.valorVATs || anuncio.preco || 0);
+      const valorOferta = Number(valorOfertado);
+      if (valorAnunciado > 0 && valorOferta > valorAnunciado) {
+        alert(`O valor ofertado (${valorOferta} VATs) não pode ser maior que o valor anunciado (${valorAnunciado} VATs).`);
+        return;
+      }
     }
 
     if (tipoProposta === "troca" && dadosTroca.itensTroca.length === 0) {
@@ -249,9 +259,9 @@ export default function DetalheAnuncio() {
                   min={0}
                   className="input"
                 />
-                {anuncio.preco > 0 && (
+                {(anuncio.valorVATs || anuncio.preco) > 0 && (
                   <p style={{ fontSize: "0.85rem", color: "#666", marginTop: "0.25rem" }}>
-                    Valor anunciado: {anuncio.preco} VATs
+                    Valor anunciado: {anuncio.valorVATs || anuncio.preco} VATs
                   </p>
                 )}
               </div>
@@ -261,6 +271,13 @@ export default function DetalheAnuncio() {
                   minhasPecas={minhasPecas}
                   onChange={setDadosTroca}
                 />
+                {anuncio.valorVATs > 0 && dadosTroca.itensTroca.length > 0 && (
+                  <VATSugestao
+                    valorAnuncio={Number(anuncio.valorVATs)}
+                    itensOfertados={dadosTroca.itensTroca}
+                    vatsComplementar={Number(dadosTroca.vatsComplementar)}
+                  />
+                )}
               </div>
             )}
 
@@ -284,5 +301,30 @@ export default function DetalheAnuncio() {
         </div>
       )}
     </div>
+  );
+}
+
+function VATSugestao({ valorAnuncio, itensOfertados, vatsComplementar }) {
+  const totalItens = itensOfertados.reduce((sum, item) => sum + Number(item.valorVATs || item.preco || 0), 0);
+  const totalOferta = totalItens + vatsComplementar;
+
+  if (totalOferta <= 0) return null;
+
+  const equivalente = saoEquivalentes(valorAnuncio, totalOferta);
+  const sugestao = sugerirComplemento(valorAnuncio, totalOferta);
+
+  if (equivalente) {
+    return (
+      <p style={{ fontSize: "0.85rem", color: "#15803d", marginTop: "0.5rem" }}>
+        Valores equivalentes (diferença dentro de 20%).
+      </p>
+    );
+  }
+
+  return (
+    <p style={{ fontSize: "0.85rem", color: "#b45309", marginTop: "0.5rem" }}>
+      A diferença entre o valor do anúncio ({valorAnuncio} VATs) e sua oferta ({totalOferta} VATs) é maior que 20%.
+      {sugestao > 0 && ` Sugestão: adicione mais ${sugestao} VATs para equiparar.`}
+    </p>
   );
 }

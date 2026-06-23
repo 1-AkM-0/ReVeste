@@ -6,10 +6,14 @@ export const ANUNCIOS_STORAGE_KEY = "reveste_anuncios";
 export const DEFAULT_OWNER_ID = "user-123";
 
 export const CATEGORIAS = Object.freeze({
-  aluguel: { label: "Aluguel", bg: "bg-blue-50", text: "text-blue-700" },
-  venda: { label: "Venda", bg: "bg-green-50", text: "text-green-700" },
-  produto: { label: "Produto", bg: "bg-amber-50", text: "text-amber-700" },
-  servico: { label: "Serviço", bg: "bg-purple-50", text: "text-purple-700" },
+  camiseta: { label: "Camiseta" },
+  calca: { label: "Calça" },
+  vestido: { label: "Vestido" },
+  saia: { label: "Saia" },
+  shorts: { label: "Shorts" },
+  jaqueta: { label: "Jaqueta" },
+  calcado: { label: "Calçado" },
+  acessorio: { label: "Acessório" },
 });
 
 const ANUNCIOS_INICIAIS = [
@@ -17,16 +21,15 @@ const ANUNCIOS_INICIAIS = [
     id: "anuncio_demo_jaqueta",
     usuarioId: "user-456",
     titulo: "Jaqueta jeans",
-    categoria: "produto",
+    categoria: "jaqueta",
     descricao: "Jaqueta jeans azul em ótimo estado, com pouco uso.",
-    preco: 35,
-    negociavel: true,
+    valorVATs: 35,
+    modalidade: "ambos",
+    estadoConservacao: "bom",
     contato: "(88) 99999-0000",
     cidade: "Juazeiro do Norte",
     estado: "CE",
-    tamanho: "medio",
-    modalidade: "",
-    vat: false,
+    tamanho: "M",
     imagens: [],
     status: "ativo",
     criadoEm: "2026-01-15T12:00:00.000Z",

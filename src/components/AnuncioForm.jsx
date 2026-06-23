@@ -28,18 +28,31 @@ const TAMANHOS = [
   { value: "XGG", label: "XGG" },
 ];
 
+const ESTADOS_CONSERVACAO = [
+  { value: "novo", label: "Novo" },
+  { value: "bom", label: "Bom" },
+  { value: "regular", label: "Regular" },
+  { value: "marcas_de_uso", label: "Marcas de uso" },
+];
+
+const MODALIDADES = [
+  { value: "venda", label: "Venda" },
+  { value: "troca", label: "Troca" },
+  { value: "ambos", label: "Ambos" },
+];
+
 const initialForm = {
   titulo: "",
   marca: "",
   categoria: "",
   descricao: "",
-  preco: "",
-  negociavel: false,
+  valorVATs: "",
+  modalidade: "",
+  estadoConservacao: "",
   contato: "",
   cidade: "",
   estado: "",
   tamanho: "",
-  vat: false,
   imagens: [],
   fotoUrl: "",
 };
@@ -48,9 +61,13 @@ function buildInitialForm(values = {}) {
   return {
     ...initialForm,
     ...values,
-    preco: values.preco ?? "",
-    negociavel: Boolean(values.negociavel),
-    vat: Boolean(values.vat),
+    valorVATs: values.valorVATs ?? "",
+    modalidade: values.modalidade ?? "",
+    estadoConservacao: values.estadoConservacao ?? "",
+    marca: values.marca ?? "",
+    cidade: values.cidade ?? "",
+    estado: values.estado ?? "",
+    contato: values.contato ?? "",
     imagens: normalizePhotoUrls(values.imagens),
     fotoUrl: "",
   };
@@ -151,8 +168,6 @@ export default function AnuncioForm({
     onSubmit?.(sanitizeAnuncioForm(form));
   }
 
-  const mostrarTamanho = Boolean(form.categoria);
-
   return (
     <form onSubmit={handleSubmit} noValidate className="form-space">
       <Field label="Título" error={errors.titulo} required>
@@ -191,20 +206,7 @@ export default function AnuncioForm({
         />
       </Field>
 
-      {mostrarTamanho && (
-        <Field label="Tamanho" error={errors.tamanho}>
-          <select
-            value={form.tamanho}
-            onChange={(e) => set("tamanho", e.target.value)}
-            className={`input${errors.tamanho ? " error" : ""}`}
-          >
-            <option value="">Selecione...</option>
-            {TAMANHOS.map((t) => (
-              <option key={t.value} value={t.value}>{t.label}</option>
-            ))}
-          </select>
-        </Field>
-      )}
+
 
       <Field label="Descrição" error={errors.descricao} required>
         <textarea
@@ -220,37 +222,61 @@ export default function AnuncioForm({
       </Field>
 
       <div className="grid-2">
-        <Field label="Preço (R$)" error={errors.preco}>
+        <Field label="Valor em VATs" error={errors.valorVATs}>
           <input
             type="number"
-            placeholder="0,00"
-            min={0}
-            step="0.01"
-            value={form.preco}
-            onChange={(e) => set("preco", e.target.value)}
-            className={`input${errors.preco ? " error" : ""}`}
-            aria-invalid={Boolean(errors.preco)}
+            placeholder="Ex: 50"
+            min={1}
+            step="1"
+            value={form.valorVATs}
+            onChange={(e) => set("valorVATs", e.target.value)}
+            className={`input${errors.valorVATs ? " error" : ""}`}
+            aria-invalid={Boolean(errors.valorVATs)}
           />
         </Field>
 
-        <div style={{ display: "flex", flexDirection: "column", justifyContent: "flex-end", gap: "0.5rem", paddingBottom: "0.25rem" }}>
-          <label className="checkbox-label">
-            <input
-              type="checkbox"
-              checked={form.negociavel}
-              onChange={(e) => set("negociavel", e.target.checked)}
-            />
-            Preço negociável
-          </label>
-          <label className="checkbox-label">
-            <input
-              type="checkbox"
-              checked={form.vat}
-              onChange={(e) => set("vat", e.target.checked)}
-            />
-              Possui etiqueta original
-          </label>
-        </div>
+        <Field label="Modalidade" error={errors.modalidade} required>
+          <select
+            value={form.modalidade}
+            onChange={(e) => set("modalidade", e.target.value)}
+            className={`input${errors.modalidade ? " error" : ""}`}
+            aria-invalid={Boolean(errors.modalidade)}
+          >
+            <option value="">Selecione...</option>
+            {MODALIDADES.map((m) => (
+              <option key={m.value} value={m.value}>{m.label}</option>
+            ))}
+          </select>
+        </Field>
+      </div>
+
+      <div className="grid-2">
+        <Field label="Estado de Conservação" error={errors.estadoConservacao} required>
+          <select
+            value={form.estadoConservacao}
+            onChange={(e) => set("estadoConservacao", e.target.value)}
+            className={`input${errors.estadoConservacao ? " error" : ""}`}
+            aria-invalid={Boolean(errors.estadoConservacao)}
+          >
+            <option value="">Selecione...</option>
+            {ESTADOS_CONSERVACAO.map((e) => (
+              <option key={e.value} value={e.value}>{e.label}</option>
+            ))}
+          </select>
+        </Field>
+
+        <Field label="Tamanho" error={errors.tamanho}>
+          <select
+            value={form.tamanho}
+            onChange={(e) => set("tamanho", e.target.value)}
+            className={`input${errors.tamanho ? " error" : ""}`}
+          >
+            <option value="">Selecione...</option>
+            {TAMANHOS.map((t) => (
+              <option key={t.value} value={t.value}>{t.label}</option>
+            ))}
+          </select>
+        </Field>
       </div>
 
       <div className="grid-2">

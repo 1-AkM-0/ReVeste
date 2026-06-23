@@ -6,7 +6,7 @@ export const FILTROS_PADRAO = {
   busca: "",
   categoria: "",
   tamanho: "",
-  modalidade: "",
+  genero: "",
   vat: "",
   ordem: "recente",
 };
@@ -35,8 +35,8 @@ export function aplicarFiltros(anuncios = [], filtros = FILTROS_PADRAO) {
     lista = lista.filter((anuncio) => anuncio.tamanho === filtrosAtuais.tamanho);
   }
 
-  if (filtrosAtuais.modalidade) {
-    lista = lista.filter((anuncio) => anuncio.modalidade === filtrosAtuais.modalidade);
+  if (filtrosAtuais.genero) {
+    lista = lista.filter((anuncio) => anuncio.genero === filtrosAtuais.genero);
   }
 
   if (filtrosAtuais.vat === "com_vat") {
@@ -89,7 +89,7 @@ export function useFiltros(anuncios = []) {
       filtros.busca,
       filtros.categoria,
       filtros.tamanho,
-      filtros.modalidade,
+      filtros.genero,
       filtros.vat,
     ].filter(Boolean).length;
   }, [filtros]);

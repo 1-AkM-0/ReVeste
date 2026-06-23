@@ -1,45 +1,50 @@
-import { Link, Navigate, Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 
+import Navbar from "./components/Navbar";
+import { AuthProvider } from "./context/AuthContext";
 import { NegociacaoProvider } from "./context/NegociacaoContext";
+import { ThemeProvider } from "./context/ThemeContext";
 
+import Cadastro from "./pages/Cadastro";
 import CriarAnuncio from "./pages/CriarAnuncio";
 import DetalheAnuncio from "./pages/DetalheAnuncio";
 import EditarAnuncio from "./pages/EditarAnuncio";
 import Explorar from "./pages/Explorar";
+import Garagem from "./pages/Garagem";
 import Home from "./pages/Home";
-import "./styles/styles.css"
+import Login from "./pages/Login";
+import Perfil from "./pages/Perfil";
+import "./styles/styles.css";
 
 import { ROUTES } from "./routes";
 
 function App() {
   return (
-    <NegociacaoProvider>
-      <div className="app-shell">
-        <header className="site-header">
-          <Link className="brand" to={ROUTES.home}>
-            ReVeste
-          </Link>
+    <ThemeProvider>
+      <AuthProvider>
+        <NegociacaoProvider>
+          <div className="app-shell">
+            <Navbar />
 
-          <nav aria-label="Navegação principal">
-            <Link to={ROUTES.home}>Início</Link>
-            <Link to={ROUTES.explorar}>Explorar</Link>
-            <Link to={ROUTES.criarAnuncio}>Novo anúncio</Link>
-          </nav>
-        </header>
+            <main>
+              <Routes>
+                <Route path={ROUTES.home} element={<Home />} />
+                <Route path={ROUTES.explorar} element={<Explorar />} />
+                <Route path={ROUTES.login} element={<Login />} />
+                <Route path={ROUTES.cadastro} element={<Cadastro />} />
+                <Route path={ROUTES.perfil} element={<Perfil />} />
+                <Route path={ROUTES.garagem} element={<Garagem />} />
+                <Route path={ROUTES.criarAnuncio} element={<CriarAnuncio />} />
+                <Route path={ROUTES.anuncioDetalhe} element={<DetalheAnuncio />} />
+                <Route path={ROUTES.editarAnuncio} element={<EditarAnuncio />} />
 
-        <main>
-          <Routes>
-            <Route path={ROUTES.home} element={<Home />} />
-            <Route path={ROUTES.explorar} element={<Explorar />} />
-            <Route path={ROUTES.criarAnuncio} element={<CriarAnuncio />} />
-            <Route path={ROUTES.anuncioDetalhe} element={<DetalheAnuncio />} />
-            <Route path={ROUTES.editarAnuncio} element={<EditarAnuncio />} />
-
-            <Route path="*" element={<Navigate replace to={ROUTES.home} />} />
-          </Routes>
-        </main>
-      </div>
-    </NegociacaoProvider>
+                <Route path="*" element={<Navigate replace to={ROUTES.home} />} />
+              </Routes>
+            </main>
+          </div>
+        </NegociacaoProvider>
+      </AuthProvider>
+    </ThemeProvider>
   );
 }
 

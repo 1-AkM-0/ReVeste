@@ -144,4 +144,19 @@ export function hasErrors(errors) {
   return Object.keys(errors ?? {}).length > 0;
 }
 
+export function validarCadastro(dados = {}) {
+  const nome = String(dados.nome ?? "").trim();
+  const email = String(dados.email ?? "").trim();
+  const senha = String(dados.senha ?? "");
+  const avatar = String(dados.avatar ?? "").trim();
+
+  if (isBlank(nome)) return "Informe seu nome.";
+  if (isBlank(email)) return "Informe seu e-mail.";
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return "Informe um e-mail valido.";
+  if (senha.length < 6) return "A senha deve ter pelo menos 6 caracteres.";
+  if (avatar && !isValidImageUrl(avatar)) return "Informe uma URL de avatar valida.";
+
+  return "";
+}
+
 export { REQUIRED_MESSAGE };

@@ -68,6 +68,11 @@ export default function DetalheAnuncio() {
       return;
     }
 
+    if (String(anuncio.usuarioId) === String(usuario.id)) {
+      alert("Você não pode negociar com seu próprio anúncio.");
+      return;
+    }
+
     const existente = propostas.find(
       (proposta) =>
         String(proposta.anuncioId) === String(anuncio.id) &&
@@ -102,6 +107,12 @@ export default function DetalheAnuncio() {
   }
 
   function confirmarProposta() {
+    if (String(anuncio.usuarioId) === String(usuario.id)) {
+      alert("Você não pode negociar com seu próprio anúncio.");
+      setModalProposta(false);
+      return;
+    }
+
     if (tipoProposta === "troca" && dadosTroca.itensTroca.length === 0) {
       alert("Selecione pelo menos 1 peça para a troca.");
       return;

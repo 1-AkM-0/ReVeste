@@ -2,6 +2,8 @@ import { useMemo } from 'react';
 import { Navigate } from 'react-router-dom';
 import ReputacaoBadge from '../components/ReputacaoBadge';
 import SaldoVATs from '../components/SaldoVATs';
+import SelosConfiabilidade from '../components/SelosConfiabilidade';
+import GraficoVATs from '../components/GraficoVATs';
 import { useAuth } from '../context/AuthContext';
 import { ROUTES } from '../routes';
 import { calcularReputacao } from '../utils/avaliacoes';
@@ -39,6 +41,11 @@ function Perfil() {
           <h2>Reputacao</h2>
           <ReputacaoBadge nota={reputacao.media || usuario.reputacao || 0} totalNegociacoes={reputacao.total || usuario.negociacoes || 0} />
           <p>Perfil ativo desde {usuario.desde}. Usuarios com boa avaliacao ganham mais confianca nas trocas.</p>
+          <SelosConfiabilidade
+            usuarioId={usuario.id}
+            desde={usuario.desde}
+            negociacoes={reputacao.total || usuario.negociacoes}
+          />
         </article>
 
         <article className="profile-card wide-card">
@@ -56,6 +63,8 @@ function Perfil() {
           </div>
         </article>
       </div>
+
+      <GraficoVATs />
     </section>
   );
 }

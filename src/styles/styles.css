@@ -1016,6 +1016,134 @@ textarea.input { resize: none; }
 /* ── Detalhe: seção grid ── */
 .detalhe-section { display: flex; flex-direction: column; gap: 1.5rem; }
 
+/* ── Animações ── */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes modalIn {
+  from { opacity: 0; transform: scale(0.92) translateY(12px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.5; }
+}
+
+.anim-fade-in {
+  animation: fadeIn 0.35s ease-out both;
+}
+
+.anim-slide-up {
+  animation: slideUp 0.4s ease-out both;
+}
+
+.anim-stagger > * {
+  animation: fadeIn 0.35s ease-out both;
+}
+
+.anim-stagger > *:nth-child(1) { animation-delay: 0.02s; }
+.anim-stagger > *:nth-child(2) { animation-delay: 0.06s; }
+.anim-stagger > *:nth-child(3) { animation-delay: 0.10s; }
+.anim-stagger > *:nth-child(4) { animation-delay: 0.14s; }
+.anim-stagger > *:nth-child(5) { animation-delay: 0.18s; }
+
+.skeleton {
+  background: linear-gradient(90deg, var(--surface) 0%, var(--surface-soft) 50%, var(--surface) 100%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+  border-radius: 0.5rem;
+}
+
+.modal-box {
+  animation: modalIn 0.25s ease-out both;
+}
+
+.page-header,
+.explorar-header {
+  animation: fadeIn 0.3s ease-out both;
+}
+
+.anuncio-card {
+  transition: border-color 0.2s, box-shadow 0.2s, transform 0.15s;
+}
+.anuncio-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+}
+
+.card-img img {
+  transition: transform 0.4s ease;
+}
+.anuncio-card:hover .card-img img {
+  transform: scale(1.08);
+}
+
+.negociacao-item {
+  transition: border-color 0.2s, background 0.2s, transform 0.15s;
+}
+.negociacao-item:hover {
+  transform: translateX(2px);
+}
+
+.chat-linha-msg {
+  animation: fadeIn 0.25s ease-out both;
+}
+
+.empty-box, .success-box {
+  animation: fadeIn 0.35s ease-out both;
+}
+
+/* ── Selos de Confiabilidade ── */
+.selos-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.selo-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.65rem;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--surface-soft), var(--surface));
+  border: 1px solid var(--border);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--brand-dark);
+  cursor: default;
+  transition: transform 0.15s, box-shadow 0.15s;
+  animation: fadeIn 0.3s ease-out both;
+}
+
+.selo-badge:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.selo-icone {
+  font-size: 0.9rem;
+  line-height: 1;
+}
+
+.selo-label {
+  white-space: nowrap;
+}
+
 /* ── utils ── */
 .sr-only {
   position: absolute; width: 1px; height: 1px;

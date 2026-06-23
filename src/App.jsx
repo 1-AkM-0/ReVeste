@@ -27,7 +27,7 @@ function App() {
           <div className="app-shell">
             <Navbar />
 
-            <main>
+            <main className="anim-fade-in">
               <Routes>
                 <Route path={ROUTES.home} element={<Home />} />
                 <Route path={ROUTES.explorar} element={<Explorar />} />

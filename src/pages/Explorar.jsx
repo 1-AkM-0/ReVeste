@@ -78,7 +78,7 @@ function Explorar() {
               Carregando...
             </div>
           ) : resultado.length > 0 ? (
-            <div className="anuncios-grid">
+            <div className="anuncios-grid anim-stagger">
               {resultado.map((anuncio) => (
                 <AnuncioCard
                   key={anuncio.id}

@@ -1,6 +1,7 @@
 import { createContext, useContext, useState } from 'react';
 import { generateId } from '../utils/ids';
 import { getStorage, setStorage } from '../utils/storage';
+import { registrarSaldoVATs } from '../components/GraficoVATs';
 
 const AuthContext = createContext(null);
 
@@ -122,13 +123,17 @@ export function AuthProvider({ children }) {
   function comprarVATs(valor) {
     const qtd = Number(valor);
     if (!usuario || Number.isNaN(qtd) || qtd <= 0) return;
-    atualizarPerfil({ vats: Number(usuario.vats || 0) + qtd });
+    const novoSaldo = Number(usuario.vats || 0) + qtd;
+    atualizarPerfil({ vats: novoSaldo });
+    registrarSaldoVATs(usuario.id, novoSaldo);
   }
 
   function trocarVATs(valor) {
     const qtd = Number(valor);
     if (!usuario || Number.isNaN(qtd) || qtd <= 0) return;
-    atualizarPerfil({ vats: Math.max(0, Number(usuario.vats || 0) - qtd) });
+    const novoSaldo = Math.max(0, Number(usuario.vats || 0) - qtd);
+    atualizarPerfil({ vats: novoSaldo });
+    registrarSaldoVATs(usuario.id, novoSaldo);
   }
 
   function transferirVATs(compradorId, vendedorId, valor) {
@@ -166,6 +171,11 @@ export function AuthProvider({ children }) {
       const seguro = withoutPassword(usuarioAtualizado);
       setStorage(STORAGE_KEY, seguro);
       setUsuario(seguro);
+    }
+
+    if (String(usuario?.id) === String(compradorId) || String(usuario?.id) === String(vendedorId)) {
+      const atualizado = atualizados.find((item) => String(item.id) === String(usuario.id));
+      if (atualizado) registrarSaldoVATs(atualizado.id, atualizado.vats);
     }
 
     return { ok: true };

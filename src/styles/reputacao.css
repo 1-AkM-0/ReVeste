@@ -1,0 +1,24 @@
+.badge-container {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: #f7f7f2;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  border: 1px solid #d9ded8;
+}
+
+.badge-nota {
+  font-weight: bold;
+  color: #16382c;
+  font-size: 1.1rem;
+}
+
+.badge-estrela {
+  color: #f3c623;
+}
+
+.badge-texto {
+  font-size: 0.85rem;
+  color: #555;
+}

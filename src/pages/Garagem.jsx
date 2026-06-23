@@ -1,12 +1,14 @@
 import React, { useEffect } from 'react';
-import { useGaragem } from '../hooks/useGaragem';
+import { useGaragem } from '../hooks/useGaragem'; // Importando o hook da garagem de volta
 
 const Garagem = () => {
-  // Simulação de usuário logado (depois pegaremos isso do AuthContext da Ana)
+  // Restaurando o mockup original para a tela voltar a funcionar
   const usuarioIdTeste = 'usuario_123';
+  
+  // Trazendo as funções da garagem de volta à vida
   const { garagem, moverItem } = useGaragem(usuarioIdTeste);
 
-  // Adicionando um item falso só para você conseguir testar visualmente se os botões funcionam
+  // O seu useEffect para simular os itens
   useEffect(() => {
     const dados = localStorage.getItem(`reveste_garagem_${usuarioIdTeste}`);
     const garagemAtual = dados ? JSON.parse(dados) : null;

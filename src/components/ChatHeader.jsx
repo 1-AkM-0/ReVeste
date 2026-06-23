@@ -15,27 +15,28 @@ const headerStyle = {
   display: 'flex',
   justifyContent: 'space-between',
   alignItems: 'center',
-  borderBottom: '1px solid #d9ded8',
-  paddingBottom: '1rem',
-  marginBottom: '1rem'
+  borderBottom: '1px solid #e5e5e5',
+  padding: '1rem',
+  backgroundColor: '#fff',
+  borderRadius: '6px 6px 0 0'
 };
 
 const tituloStyle = {
   margin: 0,
   color: '#16382c',
-  fontSize: '1.1rem',
+  fontSize: '1rem',
   fontWeight: 'bold'
 };
 
 const btnEncerrarStyle = {
-  backgroundColor: '#f7f7f2',
-  color: '#16382c',
-  border: '1px solid #16382c',
+  backgroundColor: '#fff',
+  color: '#000',
+  border: '1px solid #000',
   padding: '0.4rem 0.8rem',
-  borderRadius: '0.4rem',
+  borderRadius: '6px',
   fontWeight: 'bold',
   cursor: 'pointer',
-  fontSize: '0.85rem'
+  fontSize: '0.8rem'
 };
 
 export default ChatHeader;

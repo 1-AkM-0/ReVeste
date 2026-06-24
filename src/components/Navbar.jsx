@@ -27,11 +27,19 @@ const links = [
 
   return (
     <header className="site-header">
-      <Link className="brand" to={ROUTES.home}>
+      <Link
+        className="brand"
+        to={ROUTES.home}
+        onClick={() => setAberto(false)}
+      >
         ReVeste
       </Link>
 
-      <nav className="desktop-nav" aria-label="Navegacao principal">
+      <nav
+        className="desktop-nav"
+        aria-label="Navegacao principal"
+        style={{ display: 'none' }}
+      >
         {links.map((link) => (
           <NavLink key={link.to} to={link.to}>
             {link.label}
@@ -67,15 +75,26 @@ const links = [
           {isDark ? 'Claro' : 'Escuro'}
         </button>
       </nav>
-
       <button
         className="hamburger"
         type="button"
         onClick={() => setAberto((old) => !old)}
         aria-label="Abrir menu"
-        aria-expanded={aberto}
       >
-        Menu
+        <svg
+          width="24"
+          height="24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M4 6h16M4 12h16M4 18h16"
+          />
+        </svg>
       </button>
 
       <MenuMobile

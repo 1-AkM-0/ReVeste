@@ -7,11 +7,11 @@ O sistema permite que usuários anunciem peças e realizem negociações por mei
 
 ## Integrantes
 
-- Ana Ingridy Belem — Bacharelado em Sistemas de Informação
-- Danillo Silva Alexandre Vaz — Bacharelado em Sistemas de Informação
-- Jhonatan Teixeira Lôbo — Bacharelado em Sistemas de Informação
-- Jônatas Silva Lima — Bacharelado em Sistemas de Informação
-- Pedro Yan da Silva Gois — Bacharelado em Sistemas de Informação
+- Ana Ingridy Belem
+- Danillo Silva Alexandre Vaz
+- Jhonatan Teixeira Lôbo
+- Jônatas Silva Lima
+- Pedro Yan da Silva Gois
 
 ## Instalação e Execução
 
@@ -29,7 +29,7 @@ O sistema permite que usuários anunciem peças e realizem negociações por mei
    ```
 
 O sistema abrirá em `http://localhost:3000`. Para testar, crie um usuário como:
-- **E-mail:** ana@email.com
+- **E-mail:** teste@email.com
 - **Senha:** 123456
 
 ## Telas Principais
@@ -46,7 +46,7 @@ O sistema abrirá em `http://localhost:3000`. Para testar, crie um usuário como
 
 ## Funcionalidades Implementadas
 
-### Obrigatórias ✅
+### Obrigatórias
 - Cadastro e login de usuários
 - Criação, edição e exclusão de anúncios (foto, descrição, estado de conservação, modalidade, valor em VATs)
 - Listagem pública de anúncios com filtros (categoria, tamanho, modalidade, faixa de VATs)
@@ -58,7 +58,7 @@ O sistema abrirá em `http://localhost:3000`. Para testar, crie um usuário como
 - Garagem virtual (disponível, negociando, concluído)
 - Sugestão automática de VATs complementar (regra dos 20%)
 
-### Opcionais ⭐
+### Opcionais 
 - **Animações suaves**: fade-in de páginas, stagger em grids, hover lift em cards, modal com escala, skeleton shimmer
 - **Selos de confiabilidade**: badges baseados em avaliação (Confiável, Super Confiável), total de negociações (Experiente, Veterano) e tempo de conta (Antigo no ReVeste)
 - **Gráfico de evolução de VATs**: mini gráfico SVG inline no cartão de saldo, mostrando cada movimentação individual

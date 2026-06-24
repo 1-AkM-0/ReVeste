@@ -38,7 +38,6 @@ const links = [
       <nav
         className="desktop-nav"
         aria-label="Navegacao principal"
-        style={{ display: 'none' }}
       >
         {links.map((link) => (
           <NavLink key={link.to} to={link.to}>

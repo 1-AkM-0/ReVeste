@@ -22,6 +22,11 @@ O sistema permite que usuários anunciem peças e realizem negociações por mei
 - Histórico de negociações
 - Persistência de dados utilizando localStorage
 
+### **Diferenciais Implementados**
+- **Animações suaves**: fade-in de páginas, stagger em grids, hover lift em cards, modal com escala, skeleton shimmer
+- **Selos de confiabilidade**: badges baseados em avaliação média (Confiável, Super Confiável), total de negociações (Experiente, Veterano) e tempo de conta (Antigo no ReVeste)
+- **Gráfico de evolução de VATs**: gráfico SVG no perfil mostrando o histórico do saldo ao longo do tempo
+
 ### **Principais Tecnologias**
 - React
 - JavaScript
